@@ -1,17 +1,30 @@
 create table catalog_products (
-                                  id bigint primary key,
-                                  sku varchar(100) not null unique,
-                                  name varchar(255) not null,
-                                  price numeric(12, 2) not null,
-                                  available_quantity integer not null
+    id bigint primary key,
+    sku varchar(100) not null unique,
+    name varchar(255) not null,
+    price numeric(12, 2) not null,
+    available_quantity integer not null check (available_quantity >= 0),
+    version bigint not null default 0
 );
 
-create table orders (
-                        id uuid primary key,
-                        product_id bigint not null,
-                        quantity integer not null,
-                        status varchar(50) not null,
-                        created_at timestamp with time zone not null
+create table customer_orders (
+    id uuid primary key,
+    product_id bigint not null,
+    quantity integer not null check (quantity > 0),
+    status varchar(40) not null,
+    created_at timestamp with time zone not null,
+    constraint fk_customer_orders_product foreign key (product_id) references catalog_products (id)
+);
+
+create table payment_attempts (
+    id uuid primary key,
+    order_id uuid not null unique,
+    product_id bigint not null,
+    quantity integer not null check (quantity > 0),
+    status varchar(40) not null,
+    requested_at timestamp with time zone not null,
+    constraint fk_payment_attempts_order foreign key (order_id) references customer_orders (id),
+    constraint fk_payment_attempts_product foreign key (product_id) references catalog_products (id)
 );
 
 insert into catalog_products (id, sku, name, price, available_quantity)

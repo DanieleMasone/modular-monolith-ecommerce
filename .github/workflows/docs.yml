@@ -1,0 +1,78 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Generate aggregate JavaDoc
+        run: mvn -B -DskipTests package javadoc:aggregate
+
+      - name: Assemble Pages source
+        run: |
+          mkdir -p pages/docs
+          cp README.md pages/index.md
+          cp -R docs/. pages/docs/
+          cat > pages/_config.yml <<'EOF'
+          title: Modular Monolith E-commerce
+          markdown: kramdown
+          EOF
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./pages
+          destination: ./_site
+
+      - name: Add generated JavaDoc
+        run: |
+          mkdir -p _site/javadoc
+          cp -R target/reports/apidocs/. _site/javadoc/
+          touch _site/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    name: Deploy Documentation
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
