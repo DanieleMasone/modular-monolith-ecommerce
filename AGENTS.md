@@ -14,6 +14,7 @@ This repository is a portfolio-quality Java/Spring Boot backend. Keep changes si
 - Main verification command: `mvn clean verify`.
 - The unified CI workflow verifies the project, builds Markdown docs, aggregate JavaDoc, and generated OpenAPI JSON, then publishes them to GitHub Pages.
 - Published documentation URL: `https://danielemasone.github.io/modular-monolith-ecommerce/`.
+- Pages should expose README as the landing page, `/docs/`, `/docs/api.html`, `/docs/ci-and-pages.html`, `/openapi/`, `/openapi/openapi.json`, and `/javadoc/`.
 - Prefer current action major versions that run on Node.js 24; do not reintroduce deprecated Node.js 20 action versions.
 
 ## Architecture Rules
@@ -76,6 +77,7 @@ ecommerce-app/target/generated-docs/openapi.json
 - Keep README and files under `docs/` in English.
 - Add ADRs for meaningful architectural decisions.
 - Generated documentation should remain Maven/CI driven, not manually edited artifacts.
+- Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.
 
 ## Avoid
 

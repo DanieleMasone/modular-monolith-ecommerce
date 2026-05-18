@@ -5,7 +5,7 @@ app:
     description: REST API for product reads, order placement, order lookup, and payment lookup.
     contact:
       name: Portfolio project
-      url: https://github.com/<your-github-user>/modular-monolith-ecommerce
+      url: https://github.com/DanieleMasone/modular-monolith-ecommerce
 
 springdoc:
   api-docs:

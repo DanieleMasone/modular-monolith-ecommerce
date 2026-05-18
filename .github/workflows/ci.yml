@@ -85,6 +85,32 @@ jobs:
           cp README.md pages/index.md
           cp -R docs/. pages/docs/
           cp ecommerce-app/target/generated-docs/openapi.json pages/openapi/openapi.json
+          cat > pages/openapi/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Modular Monolith E-commerce API</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+          </head>
+          <body>
+            <div id="swagger-ui"></div>
+            <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+            <script>
+              window.onload = () => {
+                window.ui = SwaggerUIBundle({
+                  url: "./openapi.json",
+                  dom_id: "#swagger-ui",
+                  deepLinking: true,
+                  presets: [SwaggerUIBundle.presets.apis],
+                  layout: "BaseLayout"
+                });
+              };
+            </script>
+          </body>
+          </html>
+          EOF
           cp -R target/reports/apidocs/. pages/javadoc/
           cat > pages/_config.yml <<'EOF'
           title: Modular Monolith E-commerce

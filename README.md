@@ -62,6 +62,8 @@ Requirements:
 - Maven 3.9+
 - Docker with Docker Compose
 
+Run commands from the repository root. The project has one Maven wrapper at the root because the modules are built together.
+
 Start infrastructure:
 
 ```bash
@@ -71,7 +73,7 @@ docker compose up -d
 Run the application:
 
 ```bash
-mvn -pl ecommerce-app spring-boot:run
+mvn -pl ecommerce-app -am spring-boot:run
 ```
 
 Build and test:
@@ -160,7 +162,9 @@ ecommerce-app/src/main/resources/openapi.yaml
 
 Project documentation lives in `docs/`:
 
+- `docs/api.md`
 - `docs/architecture.md`
+- `docs/ci-and-pages.md`
 - `docs/testing.md`
 - `docs/adr/0001-use-modular-monolith.md`
 - `docs/adr/0002-use-spring-events-for-internal-communication.md`
@@ -170,11 +174,14 @@ Project documentation lives in `docs/`:
 
 The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
 
-Published documentation includes:
+Published pages to review:
 
-- Markdown project documentation at `/docs/`
-- Generated JavaDoc at `/javadoc/`
-- Generated OpenAPI JSON at `/openapi/openapi.json`
+- Project documentation: https://danielemasone.github.io/modular-monolith-ecommerce/docs/
+- API guide: https://danielemasone.github.io/modular-monolith-ecommerce/docs/api.html
+- CI and Pages guide: https://danielemasone.github.io/modular-monolith-ecommerce/docs/ci-and-pages.html
+- Generated Swagger UI: https://danielemasone.github.io/modular-monolith-ecommerce/openapi/
+- Generated OpenAPI JSON: https://danielemasone.github.io/modular-monolith-ecommerce/openapi/openapi.json
+- Generated JavaDoc: https://danielemasone.github.io/modular-monolith-ecommerce/javadoc/
 
 ## Future Improvements
 

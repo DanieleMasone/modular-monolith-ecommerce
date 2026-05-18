@@ -119,6 +119,8 @@ OpenAPI metadata, matched paths, Swagger UI path, and API grouping are configure
 
 The unified CI workflow uses the Maven `generate-openapi` profile to export the OpenAPI JSON into `ecommerce-app/target/generated-docs/openapi.json`, then publishes it to GitHub Pages.
 
+The published Pages site exposes both a static Swagger UI at `/openapi/` and the raw specification at `/openapi/openapi.json`.
+
 ## Persistence
 
 Flyway owns the PostgreSQL schema. Hibernate runs with:
