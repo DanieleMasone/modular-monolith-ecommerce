@@ -1,13 +1,18 @@
-name: CI
+name: CI and Pages
 
 on:
   push:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   verify:
@@ -37,3 +42,80 @@ jobs:
             **/target/surefire-reports/**
             **/target/failsafe-reports/**
           if-no-files-found: ignore
+
+  build-pages:
+    name: Build GitHub Pages
+    runs-on: ubuntu-latest
+    needs: verify
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    permissions:
+      contents: read
+      pages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Generate aggregate JavaDoc
+        run: mvn -B -DskipTests package javadoc:aggregate
+
+      - name: Start documentation infrastructure
+        run: docker compose up -d --wait
+
+      - name: Generate OpenAPI specification
+        run: mvn -B -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+
+      - name: Stop documentation infrastructure
+        if: always()
+        run: docker compose down -v
+
+      - name: Assemble Pages source
+        run: |
+          mkdir -p pages/docs pages/openapi pages/javadoc
+          cp README.md pages/index.md
+          cp -R docs/. pages/docs/
+          cp ecommerce-app/target/generated-docs/openapi.json pages/openapi/openapi.json
+          cp -R target/reports/apidocs/. pages/javadoc/
+          cat > pages/_config.yml <<'EOF'
+          title: Modular Monolith E-commerce
+          markdown: kramdown
+          EOF
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./pages
+          destination: ./_site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./_site
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build-pages
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

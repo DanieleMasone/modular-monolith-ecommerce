@@ -1,10 +1,13 @@
 # Modular Monolith E-commerce
 
-[![CI](https://github.com/<your-github-user>/modular-monolith-ecommerce/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/<your-github-user>/modular-monolith-ecommerce/actions/workflows/ci.yml)
+[![CI and Pages](https://github.com/DanieleMasone/modular-monolith-ecommerce/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DanieleMasone/modular-monolith-ecommerce/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/website?label=docs&url=https%3A%2F%2Fdanielemasone.github.io%2Fmodular-monolith-ecommerce%2F)](https://danielemasone.github.io/modular-monolith-ecommerce/)
+[![Java 21](https://img.shields.io/badge/Java-21-blue)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot 4.0.6](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F)](https://spring.io/projects/spring-boot)
 
-Portfolio backend project that demonstrates a production-minded modular monolith for an e-commerce domain. The goal is to show clear backend engineering judgment: strong module boundaries, pragmatic CQRS, internal event-driven communication, database migration discipline, automated tests, and publishable documentation.
+Portfolio backend project that demonstrates a production-minded modular monolith for an e-commerce domain. The goal is to show clear backend engineering judgment: strong module boundaries, pragmatic CQRS, internal event-driven communication, database migration discipline, automated tests, generated API documentation, and a published GitHub Pages site.
 
-GitHub Pages documentation placeholder: https://<your-github-user>.github.io/modular-monolith-ecommerce/
+Published documentation: https://danielemasone.github.io/modular-monolith-ecommerce/
 
 ## Architecture
 
@@ -27,11 +30,11 @@ The repository is a Maven multi-module Spring Boot application:
 
 ```txt
 modular-monolith-ecommerce
-├── ecommerce-app      # executable application and runtime configuration
-├── shared-kernel      # small shared abstractions: DomainEvent, EventPublisher, DomainException
-├── catalog            # products, stock ownership, read projections, Redis-backed queries
-├── orders             # order placement, lifecycle, REST API, OrderPlacedEvent publication
-└── payment            # payment attempts and listener for OrderPlacedEvent
+|-- ecommerce-app      # executable application and runtime configuration
+|-- shared-kernel      # small shared abstractions: DomainEvent, EventPublisher, DomainException
+|-- catalog            # products, stock ownership, read projections, Redis-backed queries
+|-- orders             # order placement, lifecycle, REST API, OrderPlacedEvent publication
+`-- payment            # payment attempts and listener for OrderPlacedEvent
 ```
 
 ## What This Demonstrates
@@ -44,8 +47,7 @@ modular-monolith-ecommerce
 - CQRS-light catalog reads using immutable projections and Redis cache
 - PostgreSQL schema management through Flyway with Hibernate `ddl-auto=validate`
 - Unit, architecture, API, and Testcontainers integration tests
-- Generated JavaDoc and GitHub Pages deployment workflow
-- OpenAPI documentation exposed at runtime and exported during the docs build
+- Generated JavaDoc, generated OpenAPI JSON, and GitHub Pages deployment through one CI workflow
 - MapStruct-generated REST boundary mappers with compile-time type checks
 
 ## Tech Stack
@@ -166,14 +168,17 @@ Project documentation lives in `docs/`:
 - `docs/adr/0004-use-flyway-and-postgresql.md`
 - `docs/adr/0005-use-generated-openapi-and-mapstruct.md`
 
-The docs workflow builds aggregate JavaDoc, combines it with the Markdown documentation, and publishes the result through the modern GitHub Pages artifact deployment flow.
+The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
 
-It also starts PostgreSQL and Redis through Docker Compose, runs the `generate-openapi` Maven profile, and publishes the generated OpenAPI document at `/openapi/openapi.json`.
+Published documentation includes:
+
+- Markdown project documentation at `/docs/`
+- Generated JavaDoc at `/javadoc/`
+- Generated OpenAPI JSON at `/openapi/openapi.json`
 
 ## Future Improvements
 
 - Add idempotency keys for order placement.
 - Add a transactional outbox if event delivery needs stronger guarantees.
-- Add OpenAPI generation once the API surface grows.
 - Add observability dashboards for module-level metrics.
 - Add module-specific package visibility rules if the codebase grows further.

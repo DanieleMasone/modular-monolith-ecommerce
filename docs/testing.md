@@ -59,4 +59,4 @@ Docker must be available for Testcontainers. The test class is marked with `disa
 
 The main CI workflow runs `mvn clean verify` on pushes to `master` and pull requests. GitHub-hosted Linux runners provide Docker, so Testcontainers integration tests run there.
 
-The docs workflow also runs on `master`. It generates aggregate JavaDoc, starts PostgreSQL and Redis with Docker Compose, runs the `generate-openapi` Maven profile, and publishes Markdown docs, JavaDoc, and OpenAPI JSON to GitHub Pages.
+The unified CI workflow also builds documentation on `master`. It generates aggregate JavaDoc, starts PostgreSQL and Redis with Docker Compose, runs the `generate-openapi` Maven profile, and publishes Markdown docs, JavaDoc, and OpenAPI JSON to GitHub Pages.

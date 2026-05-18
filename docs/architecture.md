@@ -117,7 +117,7 @@ springdoc-openapi scans the Spring MVC controllers at runtime and exposes:
 
 OpenAPI metadata, matched paths, Swagger UI path, and API grouping are configured in `ecommerce-app/src/main/resources/openapi.yaml`.
 
-The documentation workflow uses the Maven `generate-openapi` profile to export the OpenAPI JSON into `ecommerce-app/target/generated-docs/openapi.json`, then publishes it to GitHub Pages.
+The unified CI workflow uses the Maven `generate-openapi` profile to export the OpenAPI JSON into `ecommerce-app/target/generated-docs/openapi.json`, then publishes it to GitHub Pages.
 
 ## Persistence
 
