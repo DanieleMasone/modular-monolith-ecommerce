@@ -15,9 +15,6 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     name: Build Documentation
@@ -25,10 +22,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
@@ -49,17 +46,15 @@ jobs:
 
       - name: Assemble Pages source
         run: |
-          mkdir -p pages/docs pages/openapi
+          mkdir -p pages/docs pages/openapi pages/javadoc
           cp README.md pages/index.md
           cp -R docs/. pages/docs/
           cp ecommerce-app/target/generated-docs/openapi.json pages/openapi/openapi.json
+          cp -R target/reports/apidocs/. pages/javadoc/
           cat > pages/_config.yml <<'EOF'
           title: Modular Monolith E-commerce
           markdown: kramdown
           EOF
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
 
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
@@ -67,14 +62,8 @@ jobs:
           source: ./pages
           destination: ./_site
 
-      - name: Add generated JavaDoc
-        run: |
-          mkdir -p _site/javadoc
-          cp -R target/reports/apidocs/. _site/javadoc/
-          touch _site/.nojekyll
-
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./_site
 
