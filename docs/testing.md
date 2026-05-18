@@ -12,6 +12,7 @@ Fast unit tests cover domain and use-case behavior:
 - order event publication
 - payment listener delegation
 - payment attempt creation and duplicate event handling
+- REST mapper generation through MapStruct compilation
 
 Run:
 
@@ -37,6 +38,7 @@ Rules include:
 
 - Flyway migration and seed data
 - product read model endpoint
+- OpenAPI document endpoint
 - Redis-backed catalog query cache
 - successful order placement
 - stock reservation persistence
@@ -55,4 +57,6 @@ Docker must be available for Testcontainers. The test class is marked with `disa
 
 ## CI
 
-The main CI workflow runs `mvn clean verify` on pushes to `main` and pull requests. GitHub-hosted Linux runners provide Docker, so Testcontainers integration tests run there.
+The main CI workflow runs `mvn clean verify` on pushes to `master` and pull requests. GitHub-hosted Linux runners provide Docker, so Testcontainers integration tests run there.
+
+The docs workflow also runs on `master`. It generates aggregate JavaDoc, starts PostgreSQL and Redis with Docker Compose, runs the `generate-openapi` Maven profile, and publishes Markdown docs, JavaDoc, and OpenAPI JSON to GitHub Pages.

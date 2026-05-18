@@ -39,6 +39,7 @@ This project is a modular monolith: one deployable Spring Boot application with 
 - entity and repository scanning
 - Flyway migrations
 - REST exception handling
+- OpenAPI metadata and API grouping
 - cache, actuator, datasource, and Docker Compose configuration
 
 ## Dependency Direction
@@ -96,6 +97,25 @@ The catalog module separates command and query paths without adding a second dat
 - query service: `ProductQueryService`
 
 This is intentionally pragmatic. It improves clarity and caching without introducing distributed read models or eventual consistency.
+
+## REST Mapping
+
+REST DTOs are separated from application models. MapStruct generates the boundary mappers during Maven compilation:
+
+- `ProductRestMapper`
+- `OrderRestMapper`
+- `PaymentRestMapper`
+
+This keeps mapping code explicit and type-checked without hand-written boilerplate.
+
+## API Documentation
+
+springdoc-openapi scans the Spring MVC controllers at runtime and exposes:
+
+- `/v3/api-docs`
+- `/swagger-ui.html`
+
+The documentation workflow uses the Maven `generate-openapi` profile to export the OpenAPI JSON into `ecommerce-app/target/generated-docs/openapi.json`, then publishes it to GitHub Pages.
 
 ## Persistence
 

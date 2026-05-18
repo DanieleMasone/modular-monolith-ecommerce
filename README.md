@@ -1,6 +1,6 @@
 # Modular Monolith E-commerce
 
-[![CI](https://github.com/<your-github-user>/modular-monolith-ecommerce/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-github-user>/modular-monolith-ecommerce/actions/workflows/ci.yml)
+[![CI](https://github.com/<your-github-user>/modular-monolith-ecommerce/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/<your-github-user>/modular-monolith-ecommerce/actions/workflows/ci.yml)
 
 Portfolio backend project that demonstrates a production-minded modular monolith for an e-commerce domain. The goal is to show clear backend engineering judgment: strong module boundaries, pragmatic CQRS, internal event-driven communication, database migration discipline, automated tests, and publishable documentation.
 
@@ -45,10 +45,12 @@ modular-monolith-ecommerce
 - PostgreSQL schema management through Flyway with Hibernate `ddl-auto=validate`
 - Unit, architecture, API, and Testcontainers integration tests
 - Generated JavaDoc and GitHub Pages deployment workflow
+- OpenAPI documentation exposed at runtime and exported during the docs build
+- MapStruct-generated REST boundary mappers with compile-time type checks
 
 ## Tech Stack
 
-Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Mockito, Testcontainers, ArchUnit, Maven JavaDoc, GitHub Actions, GitHub Pages.
+Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Mockito, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, Maven JavaDoc, GitHub Actions, GitHub Pages.
 
 ## Running Locally
 
@@ -80,6 +82,19 @@ Generate JavaDoc:
 
 ```bash
 mvn -DskipTests package javadoc:aggregate
+```
+
+Generate OpenAPI from the running application through Maven:
+
+```bash
+docker compose up -d --wait
+mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+```
+
+The generated specification is written to:
+
+```txt
+ecommerce-app/target/generated-docs/openapi.json
 ```
 
 ## API Examples
@@ -119,6 +134,11 @@ Example error response:
 }
 ```
 
+Runtime API documentation:
+
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
 ## Design Principles
 
 - Keep the system deployable as one application while preserving module ownership.
@@ -138,8 +158,11 @@ Project documentation lives in `docs/`:
 - `docs/adr/0002-use-spring-events-for-internal-communication.md`
 - `docs/adr/0003-use-cqrs-light.md`
 - `docs/adr/0004-use-flyway-and-postgresql.md`
+- `docs/adr/0005-use-generated-openapi-and-mapstruct.md`
 
 The docs workflow builds aggregate JavaDoc, combines it with the Markdown documentation, and publishes the result through the modern GitHub Pages artifact deployment flow.
+
+It also starts PostgreSQL and Redis through Docker Compose, runs the `generate-openapi` Maven profile, and publishes the generated OpenAPI document at `/openapi/openapi.json`.
 
 ## Future Improvements
 

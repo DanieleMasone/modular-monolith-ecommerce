@@ -105,6 +105,18 @@ class EcommerceApplicationIT {
     }
 
     @Test
+    void openApiDocumentExposesPublicApiEndpoints() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.openapi").exists())
+                .andExpect(jsonPath("$.info.title").value("Modular Monolith E-commerce API"))
+                .andExpect(jsonPath("$.paths['/api/products'].get").exists())
+                .andExpect(jsonPath("$.paths['/api/orders'].post").exists())
+                .andExpect(jsonPath("$.paths['/api/orders/{id}'].get").exists())
+                .andExpect(jsonPath("$.paths['/api/payments/{orderId}'].get").exists());
+    }
+
+    @Test
     void productQueryUsesRedisBackedCache() {
         List<ProductView> firstRead = productQueryService.findAll();
 

@@ -2,7 +2,6 @@ package com.dmasone.identity.orders.interfaces.rest;
 
 import com.dmasone.identity.orders.application.OrderQueryService;
 import com.dmasone.identity.orders.application.OrderResponse;
-import com.dmasone.identity.orders.application.PlaceOrderCommand;
 import com.dmasone.identity.orders.application.PlaceOrderService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -25,24 +24,31 @@ public class OrderController {
 
     private final PlaceOrderService placeOrderService;
     private final OrderQueryService orderQueryService;
+    private final OrderRestMapper orderRestMapper;
 
-    public OrderController(PlaceOrderService placeOrderService, OrderQueryService orderQueryService) {
+    public OrderController(
+            PlaceOrderService placeOrderService,
+            OrderQueryService orderQueryService,
+            OrderRestMapper orderRestMapper
+    ) {
         this.placeOrderService = placeOrderService;
         this.orderQueryService = orderQueryService;
+        this.orderRestMapper = orderRestMapper;
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<OrderDto> placeOrder(@Valid @RequestBody PlaceOrderRequest request) {
         OrderResponse response = placeOrderService.placeOrder(
-                new PlaceOrderCommand(request.productId(), request.quantity())
+                orderRestMapper.toCommand(request)
         );
+        OrderDto body = orderRestMapper.toDto(response);
         return ResponseEntity
                 .created(URI.create("/api/orders/" + response.id()))
-                .body(response);
+                .body(body);
     }
 
     @GetMapping("/{id}")
-    public OrderResponse findOrder(@PathVariable UUID id) {
-        return orderQueryService.findById(id);
+    public OrderDto findOrder(@PathVariable UUID id) {
+        return orderRestMapper.toDto(orderQueryService.findById(id));
     }
 }

@@ -3,7 +3,7 @@ name: Documentation
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 permissions:
@@ -34,11 +34,22 @@ jobs:
       - name: Generate aggregate JavaDoc
         run: mvn -B -DskipTests package javadoc:aggregate
 
+      - name: Start documentation infrastructure
+        run: docker compose up -d --wait
+
+      - name: Generate OpenAPI specification
+        run: mvn -B -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+
+      - name: Stop documentation infrastructure
+        if: always()
+        run: docker compose down -v
+
       - name: Assemble Pages source
         run: |
-          mkdir -p pages/docs
+          mkdir -p pages/docs pages/openapi
           cp README.md pages/index.md
           cp -R docs/. pages/docs/
+          cp ecommerce-app/target/generated-docs/openapi.json pages/openapi/openapi.json
           cat > pages/_config.yml <<'EOF'
           title: Modular Monolith E-commerce
           markdown: kramdown

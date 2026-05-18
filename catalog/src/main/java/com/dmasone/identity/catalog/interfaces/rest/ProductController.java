@@ -1,7 +1,6 @@
 package com.dmasone.identity.catalog.interfaces.rest;
 
 import com.dmasone.identity.catalog.application.ProductQueryService;
-import com.dmasone.identity.catalog.application.ProductView;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductQueryService productQueryService;
+    private final ProductRestMapper productRestMapper;
 
-    public ProductController(ProductQueryService productQueryService) {
+    public ProductController(ProductQueryService productQueryService, ProductRestMapper productRestMapper) {
         this.productQueryService = productQueryService;
+        this.productRestMapper = productRestMapper;
     }
 
     @GetMapping
-    public List<ProductView> products() {
-        return productQueryService.findAll();
+    public List<ProductResponse> products() {
+        return productRestMapper.toResponses(productQueryService.findAll());
     }
 }
