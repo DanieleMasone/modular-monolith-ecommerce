@@ -8,8 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dmasone.identity.catalog.application.ProductQueryService;
 import com.dmasone.identity.catalog.application.ProductView;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,9 +59,6 @@ class EcommerceApplicationIT {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -148,8 +144,7 @@ class EcommerceApplicationIT {
                 .getResponse()
                 .getContentAsString();
 
-        JsonNode orderJson = objectMapper.readTree(response);
-        UUID orderId = UUID.fromString(orderJson.get("id").asText());
+        UUID orderId = UUID.fromString(JsonPath.read(response, "$.id"));
 
         mockMvc.perform(get("/api/orders/{id}", orderId))
                 .andExpect(status().isOk())

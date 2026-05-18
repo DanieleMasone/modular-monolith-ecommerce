@@ -1,0 +1,21 @@
+app:
+  openapi:
+    title: Modular Monolith E-commerce API
+    version: 0.1.0
+    description: REST API for product reads, order placement, order lookup, and payment lookup.
+    contact:
+      name: Portfolio project
+      url: https://github.com/<your-github-user>/modular-monolith-ecommerce
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  paths-to-match:
+    - /api/**
+  swagger-ui:
+    path: /swagger-ui.html
+  group-configs:
+    - group: ecommerce
+      display-name: E-commerce API
+      paths-to-match:
+        - /api/**

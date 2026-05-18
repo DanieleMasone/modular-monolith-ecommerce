@@ -139,6 +139,12 @@ Runtime API documentation:
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
+OpenAPI metadata, paths, Swagger UI path, and group configuration are defined in:
+
+```txt
+ecommerce-app/src/main/resources/openapi.yaml
+```
+
 ## Design Principles
 
 - Keep the system deployable as one application while preserving module ownership.

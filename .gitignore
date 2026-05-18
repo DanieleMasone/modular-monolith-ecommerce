@@ -1,5 +1,10 @@
 HELP.md
 target/
+pages/
+_site/
+**/target/generated-docs/
+**/target/generated-sources/annotations/
+**/target/reports/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

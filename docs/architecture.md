@@ -39,7 +39,7 @@ This project is a modular monolith: one deployable Spring Boot application with 
 - entity and repository scanning
 - Flyway migrations
 - REST exception handling
-- OpenAPI metadata and API grouping
+- OpenAPI configuration loaded from `openapi.yaml`
 - cache, actuator, datasource, and Docker Compose configuration
 
 ## Dependency Direction
@@ -114,6 +114,8 @@ springdoc-openapi scans the Spring MVC controllers at runtime and exposes:
 
 - `/v3/api-docs`
 - `/swagger-ui.html`
+
+OpenAPI metadata, matched paths, Swagger UI path, and API grouping are configured in `ecommerce-app/src/main/resources/openapi.yaml`.
 
 The documentation workflow uses the Maven `generate-openapi` profile to export the OpenAPI JSON into `ecommerce-app/target/generated-docs/openapi.json`, then publishes it to GitHub Pages.
 

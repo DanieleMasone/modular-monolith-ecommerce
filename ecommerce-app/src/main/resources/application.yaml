@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: classpath:openapi.yaml
+
   application:
     name: modular-monolith-ecommerce
 
