@@ -8,6 +8,7 @@ import com.dmasone.identity.payment.domain.PaymentStatus;
 import java.time.Clock;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -27,7 +28,7 @@ public class PaymentService {
         this.clock = clock;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PaymentResult authorize(OrderPlacedEvent event) {
         return paymentRepository.findByOrderId(event.orderId())
                 .map(PaymentResult::from)

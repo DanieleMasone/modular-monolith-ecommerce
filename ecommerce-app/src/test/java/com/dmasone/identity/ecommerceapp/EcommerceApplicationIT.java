@@ -121,7 +121,10 @@ class EcommerceApplicationIT {
         List<ProductView> cachedRead = productQueryService.findAll();
         assertThat(cachedRead.getFirst().name()).isEqualTo(firstRead.getFirst().name());
 
-        cacheManager.getCache("catalogProducts").clear();
+        Cache catalogProductsCache = cacheManager.getCache("catalogProducts");
+        assertThat(catalogProductsCache).isNotNull();
+        catalogProductsCache.evictIfPresent("all");
+
         List<ProductView> freshRead = productQueryService.findAll();
         assertThat(freshRead.getFirst().name()).isEqualTo("Cache Probe Product");
     }
@@ -210,7 +213,7 @@ class EcommerceApplicationIT {
         for (String cacheName : cacheManager.getCacheNames()) {
             Cache cache = cacheManager.getCache(cacheName);
             if (cache != null) {
-                cache.clear();
+                cache.invalidate();
             }
         }
     }
