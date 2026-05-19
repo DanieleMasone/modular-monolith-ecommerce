@@ -60,6 +60,23 @@ mvn clean verify
 
 Docker must be available for Testcontainers. The test class is marked with `disabledWithoutDocker = true` so local environments without Docker can still run the rest of the suite. A local `mvn clean verify` run without Docker is useful, but it is not a full integration-test signal.
 
+`mvn clean verify` also generates the aggregate JaCoCo report through the build-only `coverage-report` module:
+
+```txt
+coverage-report/target/site/jacoco-aggregate/index.html
+```
+
+Generate human-readable Surefire and Failsafe HTML reports after tests have run:
+
+```bash
+mvn surefire-report:report-only surefire-report:failsafe-report-only
+```
+
+CI publishes those generated reports to:
+
+- `/coverage/`
+- `/test-report/`
+
 On Windows, run the full suite with Docker Desktop started, the WSL 2 based engine enabled, and Docker set to Linux containers. `docker version` should show a server section before Maven is expected to run Testcontainers.
 
 ## CI

@@ -34,7 +34,8 @@ modular-monolith-ecommerce
 |-- shared-kernel      # small shared abstractions: DomainEvent, EventPublisher, DomainException
 |-- catalog            # products, stock ownership, read projections, Redis-backed queries
 |-- orders             # order placement, lifecycle, REST API, OrderPlacedEvent publication
-`-- payment            # payment attempts and listener for OrderPlacedEvent
+|-- payment            # payment attempts and listener for OrderPlacedEvent
+`-- coverage-report    # build-only aggregate JaCoCo report module
 ```
 
 ## What This Demonstrates
@@ -48,12 +49,12 @@ modular-monolith-ecommerce
 - CQRS-light catalog reads using immutable projections and Redis cache
 - PostgreSQL schema management through Flyway with Hibernate `ddl-auto=validate`
 - Unit, architecture, API, and Testcontainers integration tests
-- Generated JavaDoc, generated OpenAPI JSON, and GitHub Pages deployment through one CI workflow
+- Generated JavaDoc, generated OpenAPI JSON, JaCoCo coverage, HTML test reports, and GitHub Pages deployment through one CI workflow
 - MapStruct-generated REST boundary mappers with compile-time type checks
 
 ## Tech Stack
 
-Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, Maven JavaDoc, GitHub Actions, GitHub Pages.
+Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, JaCoCo, Maven JavaDoc, GitHub Actions, GitHub Pages.
 
 ## Running Locally
 
@@ -90,7 +91,13 @@ Build and test:
 mvn clean verify
 ```
 
-With Docker Desktop running, this executes the full suite, including PostgreSQL and Redis Testcontainers integration tests.
+With Docker Desktop running, this executes the full suite, including PostgreSQL and Redis Testcontainers integration tests, and generates the aggregate coverage report under `coverage-report/target/site/jacoco-aggregate/`.
+
+Generate HTML test reports after a verification run:
+
+```bash
+mvn surefire-report:report-only surefire-report:failsafe-report-only
+```
 
 Generate JavaDoc:
 
@@ -179,29 +186,23 @@ ecommerce-app/src/main/resources/openapi.yaml
 
 ## Documentation
 
-Project documentation lives in `docs/`:
+Project documentation lives in `docs/`. The public site also publishes generated reports and a static dashboard:
 
-- `docs/api.md`
-- `docs/architecture.md`
-- `docs/ci-and-pages.md`
-- `docs/testing.md`
-- `docs/adr/0001-use-modular-monolith.md`
-- `docs/adr/0002-use-spring-events-for-internal-communication.md`
-- `docs/adr/0003-use-cqrs-light.md`
-- `docs/adr/0004-use-flyway-and-postgresql.md`
-- `docs/adr/0005-use-generated-openapi-and-mapstruct.md`
-- `docs/adr/0006-use-idempotency-keys-for-order-placement.md`
+| Page | Link |
+| --- | --- |
+| Documentation site | https://danielemasone.github.io/modular-monolith-ecommerce/ |
+| Dashboard | https://danielemasone.github.io/modular-monolith-ecommerce/dashboard/ |
+| Architecture | https://danielemasone.github.io/modular-monolith-ecommerce/docs/architecture.html |
+| Business flow | https://danielemasone.github.io/modular-monolith-ecommerce/docs/business-flow.html |
+| Trade-offs | https://danielemasone.github.io/modular-monolith-ecommerce/docs/trade-offs.html |
+| ADR index | https://danielemasone.github.io/modular-monolith-ecommerce/docs/adr/ |
+| OpenAPI UI | https://danielemasone.github.io/modular-monolith-ecommerce/openapi/ |
+| OpenAPI JSON | https://danielemasone.github.io/modular-monolith-ecommerce/openapi/openapi.json |
+| JavaDoc | https://danielemasone.github.io/modular-monolith-ecommerce/javadoc/ |
+| Coverage Report | https://danielemasone.github.io/modular-monolith-ecommerce/coverage/ |
+| Test Report | https://danielemasone.github.io/modular-monolith-ecommerce/test-report/ |
 
 The `docs/` directory is source documentation and is intentionally committed. The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those generated outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
-
-Published pages to review:
-
-- Project documentation: https://danielemasone.github.io/modular-monolith-ecommerce/docs/
-- API guide: https://danielemasone.github.io/modular-monolith-ecommerce/docs/api.html
-- CI and Pages guide: https://danielemasone.github.io/modular-monolith-ecommerce/docs/ci-and-pages.html
-- Generated Swagger UI: https://danielemasone.github.io/modular-monolith-ecommerce/openapi/
-- Generated OpenAPI JSON: https://danielemasone.github.io/modular-monolith-ecommerce/openapi/openapi.json
-- Generated JavaDoc: https://danielemasone.github.io/modular-monolith-ecommerce/javadoc/
 
 ## Future Improvements
 

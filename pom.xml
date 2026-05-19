@@ -20,6 +20,7 @@
         <module>orders</module>
         <module>payment</module>
         <module>ecommerce-app</module>
+        <module>coverage-report</module>
     </modules>
 
     <properties>
@@ -34,8 +35,10 @@
         <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
         <springdoc-openapi-maven-plugin.version>1.5</springdoc-openapi-maven-plugin.version>
         <swagger-annotations.version>2.2.47</swagger-annotations.version>
+        <jacoco.version>0.8.13</jacoco.version>
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
+        <maven.surefire.report.plugin.version>3.5.3</maven.surefire.report.plugin.version>
         <maven.javadoc.plugin.version>3.10.1</maven.javadoc.plugin.version>
     </properties>
 
@@ -156,6 +159,24 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven.surefire.report.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
