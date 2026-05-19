@@ -204,9 +204,8 @@ Project documentation lives in `docs/`. The public site also publishes generated
 
 The `docs/` directory is source documentation and is intentionally committed. The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those generated outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
 
-## Future Improvements
+## License
 
-- Add a transactional outbox if event delivery needs stronger guarantees.
-- Add refund or cancellation workflows once payment reversal rules are modeled.
-- Add observability dashboards for module-level metrics.
-- Add module-specific package visibility rules if the codebase grows further.
+Released under the MIT License. See [LICENSE](LICENSE).
+
+Copyright (c) 2026 Daniele Masone.
