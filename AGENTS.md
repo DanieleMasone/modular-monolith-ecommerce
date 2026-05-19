@@ -72,6 +72,7 @@ ecommerce-app/target/generated-docs/openapi.json
 - Full suite: `mvn clean verify`.
 - Testcontainers integration tests require Docker. They are marked with `disabledWithoutDocker = true`, so local environments without Docker can still run the rest of the suite.
 - Treat `mvn clean verify` as a full local verification only when Docker Desktop is reachable and Testcontainers starts PostgreSQL and Redis.
+- On Windows, assume Docker Desktop should use the WSL 2 based engine with Linux containers for this Java/PostgreSQL/Redis project.
 - For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
 - Prefer simple hand-written fakes in unit tests when they make interactions clear; do not add Mockito or bytecode-agent setup for trivial collaborator recording.
 - CI runners have Docker, so integration tests should execute there.

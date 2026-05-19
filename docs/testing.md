@@ -58,6 +58,8 @@ mvn clean verify
 
 Docker must be available for Testcontainers. The test class is marked with `disabledWithoutDocker = true` so local environments without Docker can still run the rest of the suite. A local `mvn clean verify` run without Docker is useful, but it is not a full integration-test signal.
 
+On Windows, run the full suite with Docker Desktop started, the WSL 2 based engine enabled, and Docker set to Linux containers. `docker version` should show a server section before Maven is expected to run Testcontainers.
+
 ## CI
 
 The main CI workflow runs `mvn clean verify` on pushes to `master` and pull requests. GitHub-hosted Linux runners provide Docker, so Testcontainers integration tests run there.

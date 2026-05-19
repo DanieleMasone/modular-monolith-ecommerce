@@ -62,6 +62,13 @@ Requirements:
 - Maven 3.9+
 - Docker with Docker Compose
 
+On Windows, use Docker Desktop with the WSL 2 based engine and Linux containers. Verify that Docker is reachable before running the full suite:
+
+```bash
+docker version
+docker compose version
+```
+
 Run commands from the repository root. The project has one Maven wrapper at the root because the modules are built together.
 
 Start infrastructure:

@@ -12,6 +12,8 @@ mvn -B clean verify
 
 This executes unit tests, ArchUnit rules, and Failsafe integration tests. GitHub-hosted runners provide Docker, so Testcontainers can start PostgreSQL and Redis.
 
+For local Windows verification, Docker Desktop should be running with the WSL 2 based engine and Linux containers. That matches the Linux container environment used by the GitHub-hosted runner closely enough for this project.
+
 `build-pages` runs only for pushes to `master` or manual dispatch. It:
 
 - generates aggregate JavaDoc with Maven
