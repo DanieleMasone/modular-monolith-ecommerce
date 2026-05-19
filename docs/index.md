@@ -11,6 +11,7 @@ This site combines project documentation with generated JavaDoc.
 - [ADR 0003: Use CQRS Light](adr/0003-use-cqrs-light.md)
 - [ADR 0004: Use Flyway and PostgreSQL](adr/0004-use-flyway-and-postgresql.md)
 - [ADR 0005: Use Generated OpenAPI and MapStruct](adr/0005-use-generated-openapi-and-mapstruct.md)
+- [ADR 0006: Use Idempotency Keys for Order Placement](adr/0006-use-idempotency-keys-for-order-placement.md)
 - [Generated Swagger UI](../openapi/)
 - [Generated JavaDoc](../javadoc/index.html)
 - [Generated OpenAPI JSON](../openapi/openapi.json)

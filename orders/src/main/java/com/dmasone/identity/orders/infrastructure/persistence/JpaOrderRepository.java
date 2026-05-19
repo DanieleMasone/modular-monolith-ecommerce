@@ -28,4 +28,9 @@ public class JpaOrderRepository implements OrderRepository {
     public Optional<CustomerOrder> findById(UUID orderId) {
         return jpaRepository.findById(orderId).map(OrderJpaEntity::toDomain);
     }
+
+    @Override
+    public Optional<CustomerOrder> findByIdempotencyKey(String idempotencyKey) {
+        return jpaRepository.findByIdempotencyKey(idempotencyKey).map(OrderJpaEntity::toDomain);
+    }
 }

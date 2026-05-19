@@ -124,11 +124,15 @@ class EcommerceApplicationIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.openapi").exists())
                 .andExpect(jsonPath("$.info.title").value("Modular Monolith E-commerce API"))
+                .andExpect(jsonPath("$.components.schemas.ApiError.properties.code").exists())
                 .andExpect(jsonPath("$.paths['/api/products'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/products/{id}'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/orders'].post").exists())
                 .andExpect(jsonPath("$.paths['/api/orders'].post.responses['201']").exists())
-                .andExpect(jsonPath("$.paths['/api/orders'].post.responses['200']").doesNotExist())
+                .andExpect(jsonPath("$.paths['/api/orders'].post.responses['200']").exists())
+                .andExpect(jsonPath("$.paths['/api/orders'].post.responses['409'].content['application/json'].schema['$ref']")
+                        .value("#/components/schemas/ApiError"))
+                .andExpect(jsonPath("$.paths['/api/orders'].post.parameters[0].name").value("Idempotency-Key"))
                 .andExpect(jsonPath("$.paths['/api/orders/{id}'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/payments/{orderId}'].get").exists());
     }
@@ -185,6 +189,77 @@ class EcommerceApplicationIT {
                 Integer.class
         );
         assertThat(remainingStock).isEqualTo(8);
+    }
+
+    @Test
+    void orderPlacementWithIdempotencyKeyIsSafeToRetry() throws Exception {
+        String body = """
+                {
+                  "productId": 1,
+                  "quantity": 2
+                }
+                """;
+
+        String firstResponse = mockMvc.perform(post("/api/orders")
+                        .header("Idempotency-Key", "checkout-retry-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        UUID orderId = UUID.fromString(JsonPath.read(firstResponse, "$.id"));
+
+        mockMvc.perform(post("/api/orders")
+                        .header("Idempotency-Key", "checkout-retry-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(orderId.toString()));
+
+        Integer orderCount = jdbcTemplate.queryForObject("select count(*) from customer_orders", Integer.class);
+        Integer paymentCount = jdbcTemplate.queryForObject("select count(*) from payment_attempts", Integer.class);
+        Integer remainingStock = jdbcTemplate.queryForObject(
+                "select available_quantity from catalog_products where id = 1",
+                Integer.class
+        );
+
+        assertThat(orderCount).isEqualTo(1);
+        assertThat(paymentCount).isEqualTo(1);
+        assertThat(remainingStock).isEqualTo(8);
+    }
+
+    @Test
+    void orderPlacementRejectsIdempotencyKeyReuseForDifferentRequest() throws Exception {
+        mockMvc.perform(post("/api/orders")
+                        .header("Idempotency-Key", "checkout-retry-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "productId": 1,
+                                  "quantity": 1
+                                }
+                                """))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/orders")
+                        .header("Idempotency-Key", "checkout-retry-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "productId": 1,
+                                  "quantity": 2
+                                }
+                                """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("IDEMPOTENCY_KEY_CONFLICT"));
+
+        Integer remainingStock = jdbcTemplate.queryForObject(
+                "select available_quantity from catalog_products where id = 1",
+                Integer.class
+        );
+        assertThat(remainingStock).isEqualTo(9);
     }
 
     @Test

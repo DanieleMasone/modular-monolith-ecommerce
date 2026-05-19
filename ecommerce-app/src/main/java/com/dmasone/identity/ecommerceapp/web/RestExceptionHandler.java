@@ -63,7 +63,7 @@ public class RestExceptionHandler {
     private HttpStatus statusFor(DomainException exception) {
         return switch (exception.code()) {
             case "PRODUCT_NOT_FOUND", "ORDER_NOT_FOUND", "PAYMENT_NOT_FOUND" -> HttpStatus.NOT_FOUND;
-            case "INSUFFICIENT_STOCK" -> HttpStatus.CONFLICT;
+            case "INSUFFICIENT_STOCK", "IDEMPOTENCY_KEY_CONFLICT" -> HttpStatus.CONFLICT;
             case "INVALID_ORDER", "INVALID_QUANTITY" -> HttpStatus.BAD_REQUEST;
             default -> HttpStatus.BAD_REQUEST;
         };

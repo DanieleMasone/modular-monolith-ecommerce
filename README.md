@@ -42,6 +42,7 @@ modular-monolith-ecommerce
 - Modular monolith architecture without pretending to be microservices
 - Directional module dependencies and enforceable boundaries with ArchUnit
 - Catalog-owned stock reservation exposed through an application service
+- Idempotent order placement for safe HTTP retries
 - Orders publishing internal events without knowing payment implementation details
 - Payment reacting to `OrderPlacedEvent` after the order transaction commits
 - CQRS-light catalog reads using immutable projections and Redis cache
@@ -128,9 +129,12 @@ Place an order:
 
 ```bash
 curl -X POST http://localhost:8080/api/orders \
+  -H "Idempotency-Key: checkout-001" \
   -H "Content-Type: application/json" \
   -d '{"productId":1,"quantity":2}'
 ```
+
+Repeating the same request with the same `Idempotency-Key` returns the original order with `200 OK` and does not reserve stock or create payment attempts again. Reusing the same key for a different product or quantity returns `409 Conflict`.
 
 Fetch an order:
 
@@ -186,8 +190,9 @@ Project documentation lives in `docs/`:
 - `docs/adr/0003-use-cqrs-light.md`
 - `docs/adr/0004-use-flyway-and-postgresql.md`
 - `docs/adr/0005-use-generated-openapi-and-mapstruct.md`
+- `docs/adr/0006-use-idempotency-keys-for-order-placement.md`
 
-The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
+The `docs/` directory is source documentation and is intentionally committed. The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those generated outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
 
 Published pages to review:
 
@@ -200,7 +205,7 @@ Published pages to review:
 
 ## Future Improvements
 
-- Add idempotency keys for order placement.
 - Add a transactional outbox if event delivery needs stronger guarantees.
+- Add refund or cancellation workflows once payment reversal rules are modeled.
 - Add observability dashboards for module-level metrics.
 - Add module-specific package visibility rules if the codebase grows further.

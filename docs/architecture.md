@@ -23,6 +23,7 @@ This project is a modular monolith: one deployable Spring Boot application with 
 - order aggregate
 - order repository port and JPA adapter
 - REST endpoint for placement and retrieval
+- idempotency-key handling for safe client retries
 - stock reservation through catalog's application service
 - publication of `OrderPlacedEvent`
 
@@ -76,6 +77,7 @@ sequenceDiagram
     participant Payment
 
     Client->>Orders: POST /api/orders
+    Orders->>Orders: check Idempotency-Key
     Orders->>Catalog: reserveStock(productId, quantity)
     Catalog-->>Orders: stock reserved
     Orders->>Orders: persist order
@@ -86,6 +88,8 @@ sequenceDiagram
 ```
 
 Payment listens after the order transaction commits. That means a failed order cannot trigger payment processing.
+
+If a client retries order placement with the same `Idempotency-Key` and identical product and quantity, orders returns the existing aggregate and skips stock reservation and event publication. If the same key is reused for a different request, orders rejects it with a conflict response.
 
 ## CQRS Light
 

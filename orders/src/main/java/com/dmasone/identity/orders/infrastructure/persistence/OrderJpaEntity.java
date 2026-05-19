@@ -35,15 +35,26 @@ public class OrderJpaEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "idempotency_key", length = 128)
+    private String idempotencyKey;
+
     protected OrderJpaEntity() {
     }
 
-    private OrderJpaEntity(UUID id, Long productId, int quantity, OrderStatus status, Instant createdAt) {
+    private OrderJpaEntity(
+            UUID id,
+            Long productId,
+            int quantity,
+            OrderStatus status,
+            Instant createdAt,
+            String idempotencyKey
+    ) {
         this.id = id;
         this.productId = productId;
         this.quantity = quantity;
         this.status = status;
         this.createdAt = createdAt;
+        this.idempotencyKey = idempotencyKey;
     }
 
     public static OrderJpaEntity from(CustomerOrder order) {
@@ -52,11 +63,12 @@ public class OrderJpaEntity {
                 order.productId(),
                 order.quantity(),
                 order.status(),
-                order.createdAt()
+                order.createdAt(),
+                order.idempotencyKey()
         );
     }
 
     public CustomerOrder toDomain() {
-        return CustomerOrder.restore(id, productId, quantity, status, createdAt);
+        return CustomerOrder.restore(id, productId, quantity, status, createdAt, idempotencyKey);
     }
 }

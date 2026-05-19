@@ -9,6 +9,7 @@ Fast unit tests cover domain and use-case behavior:
 - product stock reservation
 - insufficient stock behavior
 - invalid order placement
+- idempotent order placement replay and conflict handling
 - order event publication
 - payment listener delegation
 - payment attempt creation and duplicate event handling
@@ -43,6 +44,7 @@ Rules include:
 - OpenAPI document endpoint
 - Redis-backed catalog query cache
 - successful order placement
+- idempotent order placement retry behavior
 - stock reservation persistence
 - `OrderPlacedEvent` triggering payment handling
 - invalid quantity API response

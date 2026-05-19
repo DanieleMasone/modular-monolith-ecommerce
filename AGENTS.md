@@ -34,7 +34,7 @@ This repository is a portfolio-quality Java/Spring Boot backend. Keep changes si
 
 - `shared-kernel`: `DomainEvent`, `EventPublisher`, shared domain exception base.
 - `catalog`: product data, stock rules, read projection, Redis-backed query cache.
-- `orders`: order placement, order lookup, `OrderPlacedEvent` publication.
+- `orders`: order placement, idempotent retry handling, order lookup, `OrderPlacedEvent` publication.
 - `payment`: event listener for `OrderPlacedEvent`, simulated payment authorization, payment persistence.
 - `ecommerce-app`: application bootstrap, runtime config, REST error handling, Flyway migrations, OpenAPI config.
 
@@ -80,6 +80,7 @@ ecommerce-app/target/generated-docs/openapi.json
 ## Documentation
 
 - Keep README and files under `docs/` in English.
+- Keep `docs/` versioned. It is source documentation for the Pages build, not generated output.
 - Add ADRs for meaningful architectural decisions.
 - Generated documentation should remain Maven/CI driven, not manually edited artifacts.
 - Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.

@@ -12,4 +12,6 @@ public interface OrderRepository {
     CustomerOrder save(CustomerOrder order);
 
     Optional<CustomerOrder> findById(UUID orderId);
+
+    Optional<CustomerOrder> findByIdempotencyKey(String idempotencyKey);
 }

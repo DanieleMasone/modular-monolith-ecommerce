@@ -16,8 +16,16 @@ public final class CustomerOrder {
     private final int quantity;
     private final OrderStatus status;
     private final Instant createdAt;
+    private final String idempotencyKey;
 
-    private CustomerOrder(UUID id, Long productId, int quantity, OrderStatus status, Instant createdAt) {
+    private CustomerOrder(
+            UUID id,
+            Long productId,
+            int quantity,
+            OrderStatus status,
+            Instant createdAt,
+            String idempotencyKey
+    ) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         if (productId == null) {
             throw new InvalidOrderException("Product id is required");
@@ -29,14 +37,28 @@ public final class CustomerOrder {
         this.quantity = quantity;
         this.status = Objects.requireNonNull(status, "status must not be null");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt must not be null");
+        this.idempotencyKey = idempotencyKey;
     }
 
-    public static CustomerOrder place(UUID id, Long productId, int quantity, Instant createdAt) {
-        return new CustomerOrder(id, productId, quantity, OrderStatus.PLACED, createdAt);
+    public static CustomerOrder place(
+            UUID id,
+            Long productId,
+            int quantity,
+            Instant createdAt,
+            String idempotencyKey
+    ) {
+        return new CustomerOrder(id, productId, quantity, OrderStatus.PLACED, createdAt, idempotencyKey);
     }
 
-    public static CustomerOrder restore(UUID id, Long productId, int quantity, OrderStatus status, Instant createdAt) {
-        return new CustomerOrder(id, productId, quantity, status, createdAt);
+    public static CustomerOrder restore(
+            UUID id,
+            Long productId,
+            int quantity,
+            OrderStatus status,
+            Instant createdAt,
+            String idempotencyKey
+    ) {
+        return new CustomerOrder(id, productId, quantity, status, createdAt, idempotencyKey);
     }
 
     public UUID id() {
@@ -57,5 +79,9 @@ public final class CustomerOrder {
 
     public Instant createdAt() {
         return createdAt;
+    }
+
+    public String idempotencyKey() {
+        return idempotencyKey;
     }
 }

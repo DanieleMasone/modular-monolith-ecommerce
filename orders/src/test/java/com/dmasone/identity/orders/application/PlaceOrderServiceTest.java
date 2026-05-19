@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.dmasone.identity.catalog.application.StockReservationService;
 import com.dmasone.identity.orders.application.events.OrderPlacedEvent;
 import com.dmasone.identity.orders.domain.CustomerOrder;
+import com.dmasone.identity.orders.domain.IdempotencyKeyConflictException;
 import com.dmasone.identity.orders.domain.InvalidOrderException;
 import com.dmasone.identity.orders.domain.OrderRepository;
 import com.dmasone.identity.orders.domain.OrderStatus;
@@ -40,8 +41,10 @@ class PlaceOrderServiceTest {
 
     @Test
     void placesOrderReservesStockAndPublishesEvent() {
-        OrderResponse response = placeOrderService.placeOrder(new PlaceOrderCommand(1L, 2));
+        PlaceOrderResult result = placeOrderService.placeOrder(new PlaceOrderCommand(1L, 2, null));
+        OrderResponse response = result.order();
 
+        assertThat(result.replayed()).isFalse();
         assertThat(response.productId()).isEqualTo(1L);
         assertThat(response.quantity()).isEqualTo(2);
         assertThat(response.status()).isEqualTo(OrderStatus.PLACED);
@@ -61,9 +64,51 @@ class PlaceOrderServiceTest {
 
     @Test
     void rejectsInvalidQuantityBeforeReservingStock() {
-        assertThatThrownBy(() -> placeOrderService.placeOrder(new PlaceOrderCommand(1L, 0)))
+        assertThatThrownBy(() -> placeOrderService.placeOrder(new PlaceOrderCommand(1L, 0, null)))
                 .isInstanceOf(InvalidOrderException.class)
                 .hasMessage("Order quantity must be greater than zero");
+
+        assertThat(stockReservationService.callCount).isZero();
+        assertThat(orderRepository.savedOrder).isNull();
+        assertThat(eventPublisher.publishedEvents).isEmpty();
+    }
+
+    @Test
+    void returnsExistingOrderForIdempotentReplay() {
+        CustomerOrder existing = CustomerOrder.place(
+                UUID.randomUUID(),
+                1L,
+                2,
+                FIXED_CLOCK.instant(),
+                "checkout-retry-1"
+        );
+        orderRepository.existingOrder = existing;
+
+        PlaceOrderResult result = placeOrderService.placeOrder(
+                new PlaceOrderCommand(1L, 2, " checkout-retry-1 ")
+        );
+
+        assertThat(result.replayed()).isTrue();
+        assertThat(result.order().id()).isEqualTo(existing.id());
+        assertThat(stockReservationService.callCount).isZero();
+        assertThat(orderRepository.savedOrder).isNull();
+        assertThat(eventPublisher.publishedEvents).isEmpty();
+    }
+
+    @Test
+    void rejectsIdempotencyKeyReuseForDifferentRequest() {
+        CustomerOrder existing = CustomerOrder.place(
+                UUID.randomUUID(),
+                1L,
+                2,
+                FIXED_CLOCK.instant(),
+                "checkout-retry-1"
+        );
+        orderRepository.existingOrder = existing;
+
+        assertThatThrownBy(() -> placeOrderService.placeOrder(new PlaceOrderCommand(2L, 2, "checkout-retry-1")))
+                .isInstanceOf(IdempotencyKeyConflictException.class)
+                .hasMessage("Idempotency key 'checkout-retry-1' was already used for a different order request");
 
         assertThat(stockReservationService.callCount).isZero();
         assertThat(orderRepository.savedOrder).isNull();
@@ -86,6 +131,7 @@ class PlaceOrderServiceTest {
 
     private static final class RecordingOrderRepository implements OrderRepository {
 
+        private CustomerOrder existingOrder;
         private CustomerOrder savedOrder;
 
         @Override
@@ -98,6 +144,12 @@ class PlaceOrderServiceTest {
         public Optional<CustomerOrder> findById(UUID orderId) {
             return Optional.ofNullable(savedOrder)
                     .filter(order -> order.id().equals(orderId));
+        }
+
+        @Override
+        public Optional<CustomerOrder> findByIdempotencyKey(String idempotencyKey) {
+            return Optional.ofNullable(existingOrder)
+                    .filter(order -> idempotencyKey.equals(order.idempotencyKey()));
         }
     }
 
