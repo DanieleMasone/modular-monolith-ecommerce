@@ -14,6 +14,8 @@ Fast unit tests cover domain and use-case behavior:
 - payment attempt creation and duplicate event handling
 - REST mapper generation through MapStruct compilation
 
+Unit tests use small hand-written fakes for application-service collaborators. That keeps the behavior explicit and avoids bytecode-agent warnings for simple interaction tests.
+
 Run:
 
 ```bash
@@ -53,7 +55,7 @@ Run the full suite:
 mvn clean verify
 ```
 
-Docker must be available for Testcontainers. The test class is marked with `disabledWithoutDocker = true` so local environments without Docker can still run the rest of the suite.
+Docker must be available for Testcontainers. The test class is marked with `disabledWithoutDocker = true` so local environments without Docker can still run the rest of the suite. A local `mvn clean verify` run without Docker is useful, but it is not a full integration-test signal.
 
 ## CI
 

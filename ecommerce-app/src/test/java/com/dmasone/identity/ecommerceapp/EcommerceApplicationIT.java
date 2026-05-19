@@ -9,15 +9,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.dmasone.identity.catalog.application.ProductQueryService;
 import com.dmasone.identity.catalog.application.ProductView;
 import com.jayway.jsonpath.JsonPath;
+import io.lettuce.core.ClientOptions;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.data.redis.autoconfigure.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -31,7 +35,10 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest(
-        classes = EcommerceApplication.class,
+        classes = {
+                EcommerceApplication.class,
+                EcommerceApplicationIT.RedisClientTestConfiguration.class
+        },
         properties = "spring.docker.compose.enabled=false"
 )
 @AutoConfigureMockMvc
@@ -55,6 +62,7 @@ class EcommerceApplicationIT {
         registry.add("spring.data.redis.host", REDIS::getHost);
         registry.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
         registry.add("spring.cache.type", () -> "redis");
+        registry.add("spring.data.redis.lettuce.shutdown-timeout", () -> "0ms");
     }
 
     @Autowired
@@ -108,6 +116,8 @@ class EcommerceApplicationIT {
                 .andExpect(jsonPath("$.info.title").value("Modular Monolith E-commerce API"))
                 .andExpect(jsonPath("$.paths['/api/products'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/orders'].post").exists())
+                .andExpect(jsonPath("$.paths['/api/orders'].post.responses['201']").exists())
+                .andExpect(jsonPath("$.paths['/api/orders'].post.responses['200']").doesNotExist())
                 .andExpect(jsonPath("$.paths['/api/orders/{id}'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/payments/{orderId}'].get").exists());
     }
@@ -215,6 +225,17 @@ class EcommerceApplicationIT {
             if (cache != null) {
                 cache.invalidate();
             }
+        }
+    }
+
+    @TestConfiguration(proxyBeanMethods = false)
+    static class RedisClientTestConfiguration {
+
+        @Bean
+        LettuceClientConfigurationBuilderCustomizer disableReconnectDuringContainerShutdown() {
+            return builder -> builder.clientOptions(ClientOptions.builder()
+                    .autoReconnect(false)
+                    .build());
         }
     }
 }

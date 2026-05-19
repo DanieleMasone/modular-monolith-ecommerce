@@ -52,7 +52,7 @@ modular-monolith-ecommerce
 
 ## Tech Stack
 
-Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Mockito, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, Maven JavaDoc, GitHub Actions, GitHub Pages.
+Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, Maven JavaDoc, GitHub Actions, GitHub Pages.
 
 ## Running Locally
 
