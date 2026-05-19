@@ -4,18 +4,78 @@ Project-specific guidance for AI coding agents working on `modular-monolith-ecom
 
 ## Project Purpose
 
-This repository is a portfolio-quality Java/Spring Boot backend. Keep changes simple, credible, and useful for technical reviewers and recruiters. Avoid fake distributed architecture.
+This repository is a portfolio-quality Java/Spring Boot backend project designed to showcase backend engineering skills to technical reviewers and recruiters.
+
+The project should demonstrate:
+
+- modular monolith architecture
+- clear domain boundaries
+- pragmatic event-driven design
+- persistence discipline
+- automated testing strategy
+- documentation quality
+- CI/CD maturity
+- production-oriented engineering practices
+
+Keep the implementation simple, credible, and realistic.
+
+Do not turn this project into fake distributed architecture.
 
 ## Branch and CI
 
 - The default branch is `master`.
 - GitHub Actions workflows must trigger on `master`, not `main`.
-- Keep CI and GitHub Pages deployment in `.github/workflows/ci.yml` unless there is a strong reason to split them.
-- Main verification command: `mvn clean verify`.
-- The unified CI workflow verifies the project, builds Markdown docs, aggregate JavaDoc, and generated OpenAPI JSON, then publishes them to GitHub Pages.
-- Published documentation URL: `https://danielemasone.github.io/modular-monolith-ecommerce/`.
-- Pages should expose README as the landing page, `/docs/`, `/docs/api.html`, `/docs/ci-and-pages.html`, `/openapi/`, `/openapi/openapi.json`, and `/javadoc/`.
-- Prefer current action major versions that run on Node.js 24; do not reintroduce deprecated Node.js 20 action versions.
+- Main verification command:
+
+```bash
+mvn clean verify
+```
+
+- CI should:
+    - run unit tests
+    - run integration tests
+    - run ArchUnit tests
+    - generate documentation
+    - generate OpenAPI JSON
+    - generate aggregate JavaDoc
+    - generate JaCoCo coverage reports
+    - publish documentation to GitHub Pages
+
+Published documentation URL:
+
+```txt
+https://danielemasone.github.io/modular-monolith-ecommerce/
+```
+
+## GitHub Pages Requirements
+
+GitHub Pages is used only for static assets and generated documentation.
+
+Pages should expose:
+
+```txt
+/
+├── docs/
+├── openapi/
+├── javadoc/
+└── coverage/
+```
+
+A static dashboard may display:
+
+- architecture information
+- OpenAPI metadata
+- test results
+- coverage metrics
+- CI status
+- generated documentation links
+
+Do not assume GitHub Pages can host:
+
+- Spring Boot applications
+- PostgreSQL
+- Redis
+- backend services
 
 ## Architecture Rules
 
@@ -27,67 +87,198 @@ This repository is a portfolio-quality Java/Spring Boot backend. Keep changes si
 - `orders` must not depend on `payment`.
 - Domain packages must not depend on REST or infrastructure packages.
 - Cross-module communication should happen through application services or Spring events.
-- Business modules must not depend on `ecommerce-app`; bootstrap wiring belongs in `ecommerce-app` only.
-- Do not introduce Kafka, RabbitMQ, Kubernetes, or microservices.
+- Business modules must not depend on `ecommerce-app`.
+
+Do not introduce:
+
+- Kafka
+- RabbitMQ
+- Kubernetes
+- microservices
 
 ## Module Ownership
 
-- `shared-kernel`: `DomainEvent`, `EventPublisher`, shared domain exception base.
-- `catalog`: product data, stock rules, read projection, Redis-backed query cache.
-- `orders`: order placement, idempotent retry handling, order lookup, `OrderPlacedEvent` publication.
-- `payment`: event listener for `OrderPlacedEvent`, simulated payment authorization, payment persistence.
-- `ecommerce-app`: application bootstrap, runtime config, REST error handling, Flyway migrations, OpenAPI config.
+### shared-kernel
+
+Contains:
+
+- `DomainEvent`
+- `EventPublisher`
+- shared exception abstractions
+
+### catalog
+
+Owns:
+
+- product data
+- stock reservation rules
+- product read projections
+- Redis-backed query cache
+
+### orders
+
+Owns:
+
+- order placement
+- idempotent retry handling
+- order lookup
+- `OrderPlacedEvent`
+
+### payment
+
+Owns:
+
+- payment authorization simulation
+- payment persistence
+- payment status lifecycle
+
+### ecommerce-app
+
+Owns:
+
+- application bootstrap
+- runtime configuration
+- REST exception handling
+- Flyway migrations
+- OpenAPI configuration
 
 ## Spring Boot 4 Notes
 
-- Use `org.springframework.boot.persistence.autoconfigure.EntityScan`.
-- Use `org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc`.
-- Use `spring-boot-starter-flyway`; `flyway-core` alone does not enable Boot 4 Flyway autoconfiguration.
-- Keep Hibernate `ddl-auto=validate` in application configuration.
+- Use Java 21.
+- Use Spring Boot 4.x APIs and conventions.
+- Use `spring-boot-starter-flyway`.
+- Keep Hibernate `ddl-auto=validate`.
 
-## Maven Generation
+## Maven and Build Rules
 
-- MapStruct implementations are generated during compilation under `target/generated-sources/annotations`.
-- Do not commit generated MapStruct classes.
-- OpenAPI runtime configuration lives in `ecommerce-app/src/main/resources/openapi.yaml`.
-- Do not hard-code OpenAPI title/version/group/path values in Java configuration.
-- OpenAPI JSON is generated by:
+- Root `pom.xml` must use:
 
-```bash
-docker compose up -d --wait
-mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+```xml
+<packaging>pom</packaging>
 ```
 
-- Expected OpenAPI output:
+- Only `ecommerce-app` should be executable.
+
+Do not commit generated artifacts:
+
+- `target/`
+- generated JavaDoc
+- generated OpenAPI JSON
+- coverage reports
+- Maven site output
+
+## OpenAPI Rules
+
+OpenAPI runtime configuration lives in:
+
+```txt
+ecommerce-app/src/main/resources/openapi.yaml
+```
+
+Expected generated file:
 
 ```txt
 ecommerce-app/target/generated-docs/openapi.json
 ```
 
-- Do not commit generated OpenAPI, JavaDoc, `pages/`, or `_site/` artifacts; CI must produce them.
+## Testing Rules
 
-## Tests
+Fast tests:
 
-- Fast tests: `mvn test`.
-- Full suite: `mvn clean verify`.
-- Testcontainers integration tests require Docker. They are marked with `disabledWithoutDocker = true`, so local environments without Docker can still run the rest of the suite.
-- Treat `mvn clean verify` as a full local verification only when Docker Desktop is reachable and Testcontainers starts PostgreSQL and Redis.
-- On Windows, assume Docker Desktop should use the WSL 2 based engine with Linux containers for this Java/PostgreSQL/Redis project.
-- For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
-- Prefer simple hand-written fakes in unit tests when they make interactions clear; do not add Mockito or bytecode-agent setup for trivial collaborator recording.
-- CI runners have Docker, so integration tests should execute there.
+```bash
+mvn test
+```
 
-## Documentation
+Full verification:
 
-- Keep README and files under `docs/` in English.
-- Keep `docs/` versioned. It is source documentation for the Pages build, not generated output.
-- Add ADRs for meaningful architectural decisions.
-- Generated documentation should remain Maven/CI driven, not manually edited artifacts.
-- Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.
+```bash
+mvn clean verify
+```
+
+Use:
+
+- JUnit 5
+- AssertJ
+- Testcontainers
+- ArchUnit
+
+Integration tests should verify:
+
+- PostgreSQL persistence
+- Redis integration
+- Flyway migrations
+- REST API behavior
+- event-driven flows
+
+## Documentation Rules
+
+All documentation must be written in English.
+
+Recommended structure:
+
+```txt
+docs/
+├── architecture.md
+├── testing.md
+├── trade-offs.md
+├── business-flow.md
+└── adr/
+```
+
+## JavaDoc Rules
+
+Add JavaDoc to:
+
+- public APIs
+- application services
+- architectural abstractions
+- event contracts
+
+Avoid useless JavaDoc.
+
+## CI and GitHub Actions
+
+CI should:
+
+- cache Maven dependencies
+- execute full verification
+- generate docs
+- generate coverage
+- publish GitHub Pages artifacts
+
+## Docker Rules
+
+Provide local infrastructure through:
+
+```txt
+docker-compose.yml
+```
+
+Include:
+
+- PostgreSQL
+- Redis
+
+## Error Handling
+
+REST APIs should expose structured error responses.
+
+Example:
+
+```json
+{
+  "code": "INSUFFICIENT_STOCK",
+  "message": "Insufficient stock for product 1"
+}
+```
 
 ## Avoid
 
-- Do not reintroduce module-local `application.yaml` files unless there is a strong reason.
-- Do not expose Spring Data repositories across module boundaries.
-- Do not replace Flyway with Hibernate schema generation.
-- Do not add broad dependencies without a clear architectural reason.
+Do not:
+
+- expose repositories across module boundaries
+- replace Flyway with Hibernate schema generation
+- over-engineer the system
+- add fake enterprise complexity
+
+Prefer clarity and credibility over complexity.
