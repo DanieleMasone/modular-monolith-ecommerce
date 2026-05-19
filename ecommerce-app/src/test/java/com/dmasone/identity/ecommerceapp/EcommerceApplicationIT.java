@@ -109,12 +109,23 @@ class EcommerceApplicationIT {
     }
 
     @Test
+    void productDetailEndpointReturnsSeededProduct() throws Exception {
+        mockMvc.perform(get("/api/products/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.sku").value("SKU-IPHONE-15"))
+                .andExpect(jsonPath("$.name").value("iPhone 15"))
+                .andExpect(jsonPath("$.availableQuantity").value(10));
+    }
+
+    @Test
     void openApiDocumentExposesPublicApiEndpoints() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.openapi").exists())
                 .andExpect(jsonPath("$.info.title").value("Modular Monolith E-commerce API"))
                 .andExpect(jsonPath("$.paths['/api/products'].get").exists())
+                .andExpect(jsonPath("$.paths['/api/products/{id}'].get").exists())
                 .andExpect(jsonPath("$.paths['/api/orders'].post").exists())
                 .andExpect(jsonPath("$.paths['/api/orders'].post.responses['201']").exists())
                 .andExpect(jsonPath("$.paths['/api/orders'].post.responses['200']").doesNotExist())
@@ -202,6 +213,14 @@ class EcommerceApplicationIT {
                                 """))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("PRODUCT_NOT_FOUND"));
+    }
+
+    @Test
+    void productDetailRejectsUnknownProduct() throws Exception {
+        mockMvc.perform(get("/api/products/{id}", 999))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("PRODUCT_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").value("Product 999 was not found"));
     }
 
     @Test

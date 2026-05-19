@@ -15,7 +15,7 @@ This project is a modular monolith: one deployable Spring Boot application with 
 - product domain model
 - JPA entity and repository
 - command service for stock reservation
-- read projection and query service
+- read projection and query service for list and detail endpoints
 - Redis-backed read caching
 
 `orders` owns order placement and order lookup:
@@ -63,6 +63,7 @@ Rules enforced with ArchUnit:
 - Domain packages do not depend on Spring.
 - `orders` does not depend on `payment`.
 - Other modules do not reach into catalog persistence.
+- Business modules do not depend on the `ecommerce-app` bootstrap module.
 
 ## Event Flow
 

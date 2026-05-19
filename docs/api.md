@@ -7,6 +7,7 @@ The public REST API is intentionally small. It is designed to demonstrate the mo
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `GET` | `/api/products` | Lists the catalog read model. Results are cached through Redis when infrastructure is available. |
+| `GET` | `/api/products/{id}` | Reads one catalog projection by product id. |
 | `POST` | `/api/orders` | Places an order, reserves stock in catalog, persists the order, and publishes `OrderPlacedEvent`. |
 | `GET` | `/api/orders/{id}` | Reads a persisted order by id. |
 | `GET` | `/api/payments/{orderId}` | Reads the payment attempt created by the order placed event listener. |
@@ -29,7 +30,7 @@ Important failure cases:
 | Code | HTTP status | Meaning |
 | --- | --- | --- |
 | `VALIDATION_ERROR` | `400` | The request body failed bean validation, for example quantity is below one. |
-| `PRODUCT_NOT_FOUND` | `404` | Catalog does not contain the requested product. |
+| `PRODUCT_NOT_FOUND` | `404` | Catalog does not contain the requested product, either on product lookup or order placement. |
 | `INSUFFICIENT_STOCK` | `409` | Catalog owns stock and rejected the reservation. |
 | `ORDER_NOT_FOUND` | `404` | The requested order id does not exist. |
 | `PAYMENT_NOT_FOUND` | `404` | No payment attempt exists for the order id. |

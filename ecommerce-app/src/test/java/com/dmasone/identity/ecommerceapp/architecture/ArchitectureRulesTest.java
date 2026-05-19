@@ -42,6 +42,12 @@ class ArchitectureRulesTest {
             .resideInAPackage("..catalog.infrastructure..");
 
     @ArchTest
+    static final ArchRule businessModulesDoNotDependOnBootstrapModule = noClasses()
+            .that().resideInAnyPackage("..catalog..", "..orders..", "..payment..", "..sharedkernel..")
+            .should().dependOnClassesThat()
+            .resideInAPackage("..ecommerceapp..");
+
+    @ArchTest
     static final ArchRule paymentReactsToOrderPlacedEvent = classes()
             .that().haveSimpleName("OrderPlacedPaymentListener")
             .should().dependOnClassesThat()

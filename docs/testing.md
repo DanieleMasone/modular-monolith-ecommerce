@@ -39,7 +39,7 @@ Rules include:
 `EcommerceApplicationIT` uses Testcontainers for PostgreSQL and Redis. It verifies:
 
 - Flyway migration and seed data
-- product read model endpoint
+- product list and detail read model endpoints
 - OpenAPI document endpoint
 - Redis-backed catalog query cache
 - successful order placement
@@ -47,6 +47,7 @@ Rules include:
 - `OrderPlacedEvent` triggering payment handling
 - invalid quantity API response
 - unknown product API response
+- unknown product detail API response
 - insufficient stock API response
 
 Run the full suite:

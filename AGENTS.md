@@ -27,6 +27,7 @@ This repository is a portfolio-quality Java/Spring Boot backend. Keep changes si
 - `orders` must not depend on `payment`.
 - Domain packages must not depend on REST or infrastructure packages.
 - Cross-module communication should happen through application services or Spring events.
+- Business modules must not depend on `ecommerce-app`; bootstrap wiring belongs in `ecommerce-app` only.
 - Do not introduce Kafka, RabbitMQ, Kubernetes, or microservices.
 
 ## Module Ownership

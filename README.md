@@ -82,6 +82,8 @@ Build and test:
 mvn clean verify
 ```
 
+With Docker Desktop running, this executes the full suite, including PostgreSQL and Redis Testcontainers integration tests.
+
 Generate JavaDoc:
 
 ```bash
@@ -107,6 +109,12 @@ List products:
 
 ```bash
 curl http://localhost:8080/api/products
+```
+
+Fetch one product:
+
+```bash
+curl http://localhost:8080/api/products/1
 ```
 
 Place an order:
