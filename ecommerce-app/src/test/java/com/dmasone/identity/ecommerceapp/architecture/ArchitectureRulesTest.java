@@ -7,6 +7,7 @@ import com.tngtech.archunit.core.importer.ImportOption.DoNotIncludeTests;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @AnalyzeClasses(packages = "com.dmasone.identity", importOptions = DoNotIncludeTests.class)
 class ArchitectureRulesTest {
@@ -46,6 +47,11 @@ class ArchitectureRulesTest {
             .that().resideInAnyPackage("..catalog..", "..orders..", "..payment..", "..sharedkernel..")
             .should().dependOnClassesThat()
             .resideInAPackage("..ecommerceapp..");
+
+    @ArchTest
+    static final ArchRule onlyBootstrapModuleIsExecutable = classes()
+            .that().areAnnotatedWith(SpringBootApplication.class)
+            .should().resideInAPackage("..ecommerceapp..");
 
     @ArchTest
     static final ArchRule paymentReactsToOrderPlacedEvent = classes()

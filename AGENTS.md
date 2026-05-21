@@ -4,9 +4,9 @@ Project-specific guidance for AI coding agents working on `modular-monolith-ecom
 
 ## Project Purpose
 
-This repository is a portfolio-quality Java/Spring Boot backend project designed to showcase backend engineering skills to technical reviewers and recruiters. Keep the implementation simple, credible, and realistic. Do not turn this project into fake distributed architecture.
+This repository is a portfolio-quality Java/Spring Boot backend project designed to showcase senior backend engineering skills to technical reviewers and recruiters. Keep the implementation simple, credible, and realistic. Do not turn this project into fake distributed architecture.
 
-The project should demonstrate modular monolith architecture, clear domain boundaries, pragmatic event-driven design, persistence discipline, automated testing strategy, documentation quality, CI/CD maturity, and production-oriented engineering practices.
+The project should demonstrate modular monolith architecture, clear domain boundaries, pragmatic event-driven design, persistence discipline, automated testing strategy, documentation quality, CI/CD maturity, and production-minded engineering practices. Prefer clarity over overengineering.
 
 ## Branch and CI
 
@@ -20,19 +20,19 @@ The project should demonstrate modular monolith architecture, clear domain bound
 
 ## GitHub Pages Requirements
 
-GitHub Pages is used only for static assets and generated documentation. Pages should expose:
+GitHub Pages is used only for static assets and generated documentation. The Pages root is the static portfolio dashboard. Pages should expose:
 
 ```txt
 /
+|-- index.html
 |-- docs/
-|-- dashboard/
 |-- openapi/
 |-- javadoc/
 |-- coverage/
 `-- test-report/
 ```
 
-Do not assume GitHub Pages can host Spring Boot applications, PostgreSQL, Redis, backend services, or background workers.
+Do not publish a separate `/dashboard/` alias unless the user explicitly asks for one. Do not assume GitHub Pages can host Spring Boot applications, PostgreSQL, Redis, backend services, or background workers.
 
 ## Architecture Rules
 
@@ -44,9 +44,10 @@ Do not assume GitHub Pages can host Spring Boot applications, PostgreSQL, Redis,
 - `orders` must not depend on `payment`.
 - Domain packages must not depend on REST or infrastructure packages.
 - Domain packages should not depend on Spring.
+- Do not expose repositories across module boundaries.
 - Cross-module communication should happen through application services or Spring events.
 - Business modules must not depend on `ecommerce-app`; bootstrap wiring belongs in `ecommerce-app` only.
-- Do not introduce Kafka, RabbitMQ, Kubernetes, or microservices.
+- Do not introduce microservices, Kafka, RabbitMQ, Kubernetes, distributed transactions, fake cloud-native complexity, or broad dependencies without a clear reason.
 
 ## Module Ownership
 
@@ -74,7 +75,8 @@ Do not assume GitHub Pages can host Spring Boot applications, PostgreSQL, Redis,
 - Expected OpenAPI output: `ecommerce-app/target/generated-docs/openapi.json`.
 - JaCoCo aggregate output is generated under `coverage-report/target/site/jacoco-aggregate`.
 - HTML test reports are generated under module `target/reports` directories.
-- Do not commit generated OpenAPI, JavaDoc, coverage, test report, `pages/`, `_site/`, Maven site, or `target/` artifacts.
+- Do not commit generated OpenAPI, JavaDoc, coverage, test report, Maven site, MapStruct implementation, `pages/`, `_site/`, or `target/` artifacts.
+- Generated content should live only under build output folders such as `target/` or temporary CI staging directories that are explicitly ignored.
 
 ## Tests
 
@@ -85,12 +87,15 @@ Do not assume GitHub Pages can host Spring Boot applications, PostgreSQL, Redis,
 - On Windows, assume Docker Desktop should use the WSL 2 based engine with Linux containers for this Java/PostgreSQL/Redis project.
 - Generate local HTML test reports with `mvn surefire-report:report-only surefire-report:failsafe-report-only` after tests have run.
 - For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
+- Every implemented feature should have meaningful tests. Add or update API tests for externally exposed behavior, architecture rules for boundary-sensitive changes, and integration tests when persistence, Flyway, Redis, or events are involved.
 
 ## Documentation
 
 - Keep README and files under `docs/` in English.
 - Keep `docs/` versioned. It is source documentation for the Pages build, not generated output.
 - Add ADRs for meaningful architectural decisions.
+- Document externally visible API behavior through OpenAPI annotations or configuration when relevant.
+- Update documentation when a feature changes business flow, module responsibility, CI behavior, or a deliberate trade-off.
 - Generated documentation should remain Maven/CI driven, not manually edited artifacts.
 - Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.
 

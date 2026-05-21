@@ -1,10 +1,16 @@
 HELP.md
 target/
+*/target/
 pages/
 _site/
+generated-docs/
+generated-sources/
 **/target/generated-docs/
 **/target/generated-sources/annotations/
 **/target/reports/
+*.class
+*.log
+.DS_Store
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

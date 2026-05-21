@@ -187,12 +187,12 @@ ecommerce-app/src/main/resources/openapi.yaml
 
 ## Documentation
 
-Project documentation lives in `docs/`. The public site also publishes generated reports and a static dashboard:
+Project documentation lives in `docs/`. The public GitHub Pages root is the static dashboard; generated reports are published beside the source documentation:
 
 | Page | Link |
 | --- | --- |
-| Documentation site | https://danielemasone.github.io/modular-monolith-ecommerce/ |
-| Dashboard | https://danielemasone.github.io/modular-monolith-ecommerce/dashboard/ |
+| Dashboard / Documentation site | https://danielemasone.github.io/modular-monolith-ecommerce/ |
+| Documentation | https://danielemasone.github.io/modular-monolith-ecommerce/docs/ |
 | Architecture | https://danielemasone.github.io/modular-monolith-ecommerce/docs/architecture.html |
 | Business flow | https://danielemasone.github.io/modular-monolith-ecommerce/docs/business-flow.html |
 | Trade-offs | https://danielemasone.github.io/modular-monolith-ecommerce/docs/trade-offs.html |
@@ -203,7 +203,7 @@ Project documentation lives in `docs/`. The public site also publishes generated
 | Coverage Report | https://danielemasone.github.io/modular-monolith-ecommerce/coverage/ |
 | Test Report | https://danielemasone.github.io/modular-monolith-ecommerce/test-report/ |
 
-The `docs/` directory is source documentation and is intentionally committed. The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those generated outputs with the Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
+The `docs/` directory is source documentation and is intentionally committed. The unified CI workflow verifies the project, builds aggregate JavaDoc, exports OpenAPI JSON through the `generate-openapi` Maven profile, combines those generated outputs with the dashboard and Markdown documentation, and deploys the resulting static site through GitHub Pages artifact deployment.
 
 ## License
 

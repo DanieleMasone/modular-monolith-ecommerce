@@ -110,6 +110,8 @@
                         <version>${spring.boot.version}</version>
                         <configuration>
                             <jvmArguments>-Dspring.application.admin.enabled=true -Dspring.docker.compose.enabled=false</jvmArguments>
+                            <wait>1000</wait>
+                            <maxAttempts>180</maxAttempts>
                         </configuration>
                         <executions>
                             <execution>

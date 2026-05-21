@@ -106,11 +106,8 @@ jobs:
 
       - name: Assemble Pages source
         run: |
-          mkdir -p pages/_layouts pages/assets pages/docs pages/dashboard pages/openapi pages/javadoc pages/coverage pages/test-report
-          {
-            printf -- "---\nlayout: default\ntitle: Modular Monolith E-commerce\n---\n\n"
-            cat README.md
-          } > pages/index.md
+          mkdir -p pages/_layouts pages/assets pages/docs pages/openapi pages/javadoc pages/coverage pages/test-report
+          cp dashboard/index.html pages/index.html
           cp -R docs/. pages/docs/
           find pages/docs -name "*.md" -print0 | while IFS= read -r -d '' file; do
             tmp="$(mktemp)"
@@ -120,7 +117,6 @@ jobs:
             } > "$tmp"
             mv "$tmp" "$file"
           done
-          cp -R dashboard/. pages/dashboard/
           cp ecommerce-app/target/generated-docs/openapi.json pages/openapi/openapi.json
           cat > pages/openapi/index.html <<'EOF'
           <!doctype html>
@@ -257,7 +253,6 @@ jobs:
             <nav class="site-nav">
               <div class="page-shell">
                 <a href="{{ '/' | relative_url }}">Home</a>
-                <a href="{{ '/dashboard/' | relative_url }}">Dashboard</a>
                 <a href="{{ '/docs/' | relative_url }}">Docs</a>
                 <a href="{{ '/openapi/' | relative_url }}">OpenAPI</a>
                 <a href="{{ '/javadoc/' | relative_url }}">JavaDoc</a>

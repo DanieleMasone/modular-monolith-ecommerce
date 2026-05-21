@@ -1,8 +1,8 @@
 # Modular Monolith E-commerce Documentation
 
-This site combines project documentation with generated JavaDoc.
+This site combines project documentation with generated JavaDoc, OpenAPI, coverage, and test reports. The site root is the static dashboard.
 
-- [Static Dashboard](../dashboard/)
+- [Static Dashboard](../)
 - [API Guide](api.md)
 - [Architecture](architecture.md)
 - [Business Flow](business-flow.md)
