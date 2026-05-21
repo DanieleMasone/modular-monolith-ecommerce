@@ -96,6 +96,8 @@ Do not publish a separate `/dashboard/` alias unless the user explicitly asks fo
 - Add ADRs for meaningful architectural decisions.
 - Document externally visible API behavior through OpenAPI annotations or configuration when relevant.
 - Update documentation when a feature changes business flow, module responsibility, CI behavior, or a deliberate trade-off.
+- Dashboard links should use the project Pages base path `/modular-monolith-ecommerce/` so they remain valid after publishing.
+- After changing the Pages structure, verify dashboard links, generated artifact paths, and mobile layout assumptions.
 - Generated documentation should remain Maven/CI driven, not manually edited artifacts.
 - Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.
 
