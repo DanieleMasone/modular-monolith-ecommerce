@@ -54,6 +54,12 @@
       scroll-behavior: smooth;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
     body {
       margin: 0;
       background: var(--bg);
@@ -75,6 +81,24 @@
     button:focus-visible {
       outline: 3px solid var(--accent-2);
       outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      z-index: 20;
+      transform: translateY(-160%);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--accent);
+      color: var(--button-text);
+      font-weight: 850;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+      text-decoration: none;
     }
 
     .wrap {
@@ -102,6 +126,7 @@
       color: var(--text);
       font-weight: 800;
       letter-spacing: 0;
+      line-height: 1.2;
     }
 
     .nav {
@@ -114,8 +139,12 @@
       color: var(--muted);
       font-size: 14px;
       font-weight: 700;
+      min-height: 40px;
       padding: 8px 10px;
       border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .nav a:hover {
@@ -180,6 +209,7 @@
       color: var(--text);
       letter-spacing: 0;
       line-height: 1.15;
+      overflow-wrap: anywhere;
     }
 
     h1 {
@@ -187,6 +217,14 @@
       max-width: 780px;
       font-size: clamp(38px, 7vw, 66px);
       line-height: 1;
+    }
+
+    .title-word {
+      display: inline;
+    }
+
+    .nowrap {
+      white-space: nowrap;
     }
 
     h2 {
@@ -202,12 +240,14 @@
     p {
       margin: 0 0 14px;
       color: var(--muted);
+      overflow-wrap: anywhere;
     }
 
     .lead {
       max-width: 760px;
       color: var(--muted);
       font-size: clamp(17px, 2vw, 20px);
+      overflow-wrap: anywhere;
     }
 
     .badge-row,
@@ -243,6 +283,7 @@
       background: var(--accent);
       color: var(--button-text);
       font-weight: 850;
+      text-align: center;
     }
 
     .button:hover {
@@ -283,11 +324,13 @@
     }
 
     .link-list a::after {
-      content: "open";
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
+      content: "";
+      flex: 0 0 auto;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--muted);
+      border-top: 2px solid var(--muted);
+      transform: rotate(45deg);
     }
 
     .link-list a:hover {
@@ -301,6 +344,7 @@
 
     .section {
       margin-top: 20px;
+      scroll-margin-top: 84px;
     }
 
     .panel {
@@ -358,6 +402,13 @@
     .module-box span {
       color: var(--muted);
       font-size: 14px;
+    }
+
+    .module-box,
+    .flow-step,
+    .quality-item,
+    .card {
+      min-width: 0;
     }
 
     .flow {
@@ -438,18 +489,27 @@
       .topbar-inner {
         align-items: flex-start;
         flex-direction: column;
-        padding: 10px 0;
+        gap: 10px;
+        padding: 12px 0;
       }
 
       .nav {
         width: 100%;
-        overflow-x: auto;
-        padding-bottom: 4px;
+        flex-wrap: wrap;
+        overflow-x: visible;
       }
 
-      .nav a,
+      .nav a {
+        flex: 1 1 140px;
+        min-height: 44px;
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        color: var(--text);
+      }
+
       .theme-toggle {
-        flex: 0 0 auto;
+        flex: 1 1 160px;
+        min-height: 44px;
       }
 
       .module-stack {
@@ -466,8 +526,16 @@
         width: min(100% - 22px, 1120px);
       }
 
+      .topbar {
+        position: static;
+      }
+
+      body {
+        overflow-x: clip;
+      }
+
       header {
-        padding-top: 28px;
+        padding: 22px 0 14px;
       }
 
       .topbar-inner {
@@ -475,29 +543,89 @@
       }
 
       .brand {
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        max-width: none;
+        font-size: 16px;
+        white-space: normal;
+      }
+
+      .nav {
+        gap: 6px;
+      }
+
+      .nav a {
+        flex-basis: calc(50% - 3px);
+        padding: 8px;
+        font-size: 13px;
+      }
+
+      .theme-toggle {
+        flex-basis: 100%;
+      }
+
+      .hero-main,
+      .review-links,
+      .panel,
+      .card {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: clamp(31px, 9vw, 40px);
+        line-height: 1.06;
+        max-width: none;
+      }
+
+      .title-word {
+        display: block;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .lead {
+        font-size: 16px;
+        max-width: 31ch;
+      }
+
+      .badge-row {
+        gap: 7px;
+      }
+
+      .badge {
+        padding: 6px 8px;
+        font-size: 12px;
       }
 
       .actions {
         flex-direction: column;
+        margin-top: 18px;
       }
 
       .button {
         width: 100%;
       }
 
+      .link-list a {
+        align-items: center;
+        min-height: 46px;
+      }
+
       .quality-list,
       .flow {
         grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        display: grid;
+        gap: 10px;
       }
     }
   </style>
 </head>
 
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 <nav class="topbar" aria-label="Primary navigation">
   <div class="wrap topbar-inner">
     <a class="brand" href="/modular-monolith-ecommerce/" aria-label="Dashboard home">Modular Monolith E-commerce</a>
@@ -525,7 +653,11 @@
         <span class="badge">ArchUnit</span>
       </div>
 
-      <h1 id="page-title">Modular Monolith E-commerce</h1>
+      <h1 id="page-title">
+        <span class="title-word">Modular</span>
+        <span class="title-word">Monolith</span>
+        <span class="title-word nowrap">E-commerce</span>
+      </h1>
 
       <p class="lead">
         A production-minded backend showcase focused on clear module boundaries,
@@ -560,7 +692,7 @@
   </div>
 </header>
 
-<main class="wrap">
+<main id="main-content" class="wrap">
   <section id="architecture" class="section panel" aria-labelledby="module-map-title">
     <h2 id="module-map-title">Module Map</h2>
     <p>
@@ -707,6 +839,7 @@ mvn clean verify</code></pre>
     const nextTheme = theme === "dark" ? "light" : "dark";
     toggle.textContent = `${nextTheme[0].toUpperCase()}${nextTheme.slice(1)} mode`;
     toggle.setAttribute("aria-label", `Switch to ${nextTheme} mode`);
+    toggle.setAttribute("aria-pressed", String(theme === "light"));
   }
 
   applyTheme(document.documentElement.dataset.theme || "dark");
