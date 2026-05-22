@@ -70,9 +70,6 @@ public class OpenApiConfiguration {
 
     @SuppressWarnings("rawtypes")
     private void attachApiErrorContent(ApiResponse response) {
-        if (response.getContent() != null && !response.getContent().isEmpty()) {
-            return;
-        }
         response.setContent(new Content().addMediaType(
                 APPLICATION_JSON,
                 new MediaType().schema(new Schema<>().$ref("#/components/schemas/" + API_ERROR_SCHEMA))

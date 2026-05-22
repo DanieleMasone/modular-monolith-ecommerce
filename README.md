@@ -3,7 +3,7 @@
 [![CI and Pages](https://github.com/DanieleMasone/modular-monolith-ecommerce/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DanieleMasone/modular-monolith-ecommerce/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21-blue)](https://openjdk.org/projects/jdk/21/)
-[![Spring Boot 4.0.6](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F)](https://spring.io/projects/spring-boot)
+[![Spring Boot 4.x](https://img.shields.io/badge/Spring%20Boot-4.x-6DB33F)](https://spring.io/projects/spring-boot)
 [![Documentation](https://img.shields.io/website?label=docs&url=https%3A%2F%2Fdanielemasone.github.io%2Fmodular-monolith-ecommerce%2F)](https://danielemasone.github.io/modular-monolith-ecommerce/)
 
 Portfolio backend project that demonstrates a production-minded modular monolith for an e-commerce domain. The goal is to show clear backend engineering judgment: strong module boundaries, pragmatic CQRS, internal event-driven communication, database migration discipline, automated tests, generated API documentation, and a published GitHub Pages site.
@@ -55,7 +55,7 @@ modular-monolith-ecommerce
 
 ## Tech Stack
 
-Java 21, Spring Boot 4.0.6, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, JaCoCo, Maven JavaDoc, GitHub Actions, GitHub Pages.
+Java 21, Spring Boot 4.x, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, JaCoCo, Maven JavaDoc, GitHub Actions, GitHub Pages. Exact dependency versions are centralized in the root `pom.xml`.
 
 ## Running Locally
 

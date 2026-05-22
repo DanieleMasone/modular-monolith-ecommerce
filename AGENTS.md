@@ -4,7 +4,7 @@ Project-specific guidance for AI coding agents working on `modular-monolith-ecom
 
 ## Project Purpose
 
-This repository is a portfolio-quality Java/Spring Boot backend project designed to showcase senior backend engineering skills to technical reviewers and recruiters. Keep the implementation simple, credible, and realistic. Do not turn this project into fake distributed architecture.
+This repository is a portfolio-quality Java/Spring Boot backend project designed to showcase senior backend engineering skills to technical reviewers and recruiters. Keep the implementation simple, credible, and realistic. Do not turn this project into fake distributed architecture or enterprise theatre.
 
 The project should demonstrate modular monolith architecture, clear domain boundaries, pragmatic event-driven design, persistence discipline, automated testing strategy, documentation quality, CI/CD maturity, and production-minded engineering practices. Prefer clarity over overengineering.
 
@@ -17,6 +17,21 @@ The project should demonstrate modular monolith architecture, clear domain bound
 - CI should run unit tests, integration tests, ArchUnit tests, OpenAPI generation, aggregate JavaDoc, JaCoCo coverage, HTML test reports, and GitHub Pages publication.
 - Published documentation URL: `https://danielemasone.github.io/modular-monolith-ecommerce/`.
 - Prefer current action major versions that run on Node.js 24; do not reintroduce deprecated Node.js 20 action versions.
+
+## Stable Structure
+
+The current module structure is stable. Do not add, remove, split, or rename modules unless the user explicitly asks for an architectural change.
+
+Current modules:
+
+```txt
+ecommerce-app
+shared-kernel
+catalog
+orders
+payment
+coverage-report
+```
 
 ## GitHub Pages Requirements
 
@@ -66,6 +81,19 @@ Do not publish a separate `/dashboard/` alias unless the user explicitly asks fo
 - Use `spring-boot-starter-flyway`; `flyway-core` alone does not enable Boot 4 Flyway autoconfiguration.
 - Keep Hibernate `ddl-auto=validate`.
 
+## Dependency and Version Policy
+
+- Prefer the latest stable compatible version, not the newest version at any cost.
+- Keep Java at 21 unless the user explicitly asks for a platform change.
+- Keep Spring Boot on a stable compatible Spring Boot 4.x release unless the user explicitly asks for a major upgrade.
+- Do not use milestone, RC, snapshot, beta, or alpha releases unless the user explicitly requests them.
+- Do not upgrade to a new major version if it requires architectural churn or weakens the portfolio signal.
+- Check official release notes or project documentation for breaking changes before version changes.
+- Update related dependencies consistently and keep versions centralized in the root `pom.xml` where practical.
+- After dependency or plugin changes, run `mvn clean verify`. If OpenAPI generation or Pages output is affected, also run the Docker Compose plus `generate-openapi` verification flow.
+- Update README, AGENTS.md, docs, and CI only when commands, behavior, or support policy changes.
+- Do not add dependencies without a clear architectural or testing reason.
+
 ## Maven Generation
 
 - Root `pom.xml` must use `<packaging>pom</packaging>`.
@@ -88,6 +116,13 @@ Do not publish a separate `/dashboard/` alias unless the user explicitly asks fo
 - Generate local HTML test reports with `mvn surefire-report:report-only surefire-report:failsafe-report-only` after tests have run.
 - For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
 - Every implemented feature should have meaningful tests. Add or update API tests for externally exposed behavior, architecture rules for boundary-sensitive changes, and integration tests when persistence, Flyway, Redis, or events are involved.
+
+## Agent Behavior
+
+- Before changing code, inspect the existing implementation and tests. Avoid duplicating features that are already implemented.
+- For larger tasks, write a short plan after reading the relevant code, then implement and verify.
+- For dependency updates, audit first, reject pre-release or incompatible major upgrades by default, then update only stable compatible versions.
+- Keep edits scoped to the requested behavior and the existing module boundaries.
 
 ## Documentation
 
