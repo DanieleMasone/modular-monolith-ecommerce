@@ -16,19 +16,21 @@ For local Windows verification, Docker Desktop should be running with the WSL 2 
 
 `build-pages` runs only for pushes to `master` or manual dispatch. It:
 
-- generates aggregate JavaDoc with Maven
 - starts PostgreSQL and Redis with Docker Compose
 - runs the `generate-openapi` Maven profile
+- generates aggregate JavaDoc with Maven
 - uses the static dashboard as the site root
 - adds aggregate JaCoCo coverage
 - adds HTML test reports
-- assembles a static Pages source directory
+- assembles a static Pages source directory with `scripts/build-pages.sh`
 - builds the final site with `actions/jekyll-build-pages`
 - uploads the Pages artifact
 
 The OpenAPI profile starts the application with Spring Boot's Maven `start` goal and uses an extended readiness window. That keeps documentation generation reliable on slower local Docker Desktop machines and shared CI runners without changing application runtime behavior.
 
-`deploy-pages` uses the modern GitHub Pages artifact deployment flow. Its token permissions are scoped to `contents: read`, `pages: write`, and `id-token: write`.
+`deploy-pages` uses the modern GitHub Pages artifact deployment flow. Its token permissions are scoped to `contents: read`, `pages: write`, and `id-token: write`, and Pages deployments are serialized with a `pages` concurrency group while pull request verification remains unconstrained.
+
+The workflow uses official GitHub actions with Node.js 24 compatible major versions where those majors exist. If GitHub publishes a new major action version, update the workflow only after checking the official action release notes and confirming that the runner version and Pages artifact compatibility still match this repository.
 
 ## Mermaid Rendering
 
@@ -64,3 +66,15 @@ The `docs/` directory is not generated output. It contains reviewed source docum
 - module `target/reports/surefire.html` and `target/reports/failsafe.html`
 
 Those paths are ignored and can be recreated by CI from committed source code, committed Markdown docs, JavaDoc comments, and the running OpenAPI endpoint.
+
+## Local Pages Assembly
+
+After generating the required Maven artifacts locally, the Pages source directory can be assembled with:
+
+```bash
+bash scripts/build-pages.sh
+```
+
+On Windows, run the command from Git Bash if `bash` resolves to WSL and no Linux distribution is installed.
+
+The script intentionally fails if a required artifact is missing, such as OpenAPI JSON, aggregate JavaDoc, aggregate coverage, or an expected Surefire/Failsafe HTML report. It writes only ignored staging output under `pages/` and `_site/`; do not commit those directories.

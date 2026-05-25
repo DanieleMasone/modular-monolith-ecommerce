@@ -3,6 +3,7 @@ target/
 */target/
 pages/
 _site/
+quality-reports/
 generated-docs/
 generated-sources/
 **/target/generated-docs/

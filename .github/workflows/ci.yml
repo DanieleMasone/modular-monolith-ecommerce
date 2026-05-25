@@ -10,10 +10,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
   verify:
     name: Maven Verify
@@ -30,7 +26,12 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Verify
+      - name: Check Docker
+        run: |
+          docker version
+          docker compose version
+
+      - name: Verify project
         run: mvn -B clean verify
 
       - name: Generate HTML test reports
@@ -86,216 +87,29 @@ jobs:
         uses: actions/configure-pages@v6
 
       - name: Download quality reports
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: quality-reports
           path: quality-reports
 
-      - name: Generate aggregate JavaDoc
-        run: mvn -B -DskipTests package javadoc:aggregate
+      - name: Check Docker Compose
+        run: docker compose version
 
-      - name: Start documentation infrastructure
+      - name: Start Docker Compose for OpenAPI
         run: docker compose up -d --wait
 
       - name: Generate OpenAPI specification
         run: mvn -B -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
 
-      - name: Stop documentation infrastructure
+      - name: Stop Docker Compose
         if: always()
         run: docker compose down -v
 
-      - name: Assemble Pages source
-        run: |
-          mkdir -p pages/_layouts pages/assets pages/docs pages/openapi pages/javadoc pages/coverage pages/test-report
-          cp dashboard/index.html pages/index.html
-          cp -R docs/. pages/docs/
-          find pages/docs -name "*.md" -print0 | while IFS= read -r -d '' file; do
-            tmp="$(mktemp)"
-            {
-              printf -- "---\nlayout: default\n---\n\n"
-              cat "$file"
-            } > "$tmp"
-            mv "$tmp" "$file"
-          done
-          cp ecommerce-app/target/generated-docs/openapi.json pages/openapi/openapi.json
-          cat > pages/openapi/index.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <title>Modular Monolith E-commerce API</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
-          </head>
-          <body>
-            <div id="swagger-ui"></div>
-            <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
-            <script>
-              window.onload = () => {
-                window.ui = SwaggerUIBundle({
-                  url: "./openapi.json",
-                  dom_id: "#swagger-ui",
-                  deepLinking: true,
-                  presets: [SwaggerUIBundle.presets.apis],
-                  layout: "BaseLayout"
-                });
-              };
-            </script>
-          </body>
-          </html>
-          EOF
-          cp -R target/reports/apidocs/. pages/javadoc/
-          test -d quality-reports/coverage-report/target/site/jacoco-aggregate
-          cp -R quality-reports/coverage-report/target/site/jacoco-aggregate/. pages/coverage/
-          cat > pages/test-report/index.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <title>Test Reports</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="../assets/site.css">
-          </head>
-          <body>
-            <main class="page-shell">
-              <h1>HTML Test Reports</h1>
-              <p>Generated from Maven Surefire and Failsafe XML outputs during CI.</p>
-              <ul>
-                <li><a href="./shared-kernel/surefire.html">shared-kernel Surefire report</a></li>
-                <li><a href="./catalog/surefire.html">catalog Surefire report</a></li>
-                <li><a href="./orders/surefire.html">orders Surefire report</a></li>
-                <li><a href="./payment/surefire.html">payment Surefire report</a></li>
-                <li><a href="./ecommerce-app/surefire.html">ecommerce-app Surefire report</a></li>
-                <li><a href="./ecommerce-app/failsafe.html">ecommerce-app Failsafe report</a></li>
-              </ul>
-            </main>
-          </body>
-          </html>
-          EOF
-          find quality-reports -name "surefire.html" -o -name "failsafe.html" | while read -r report; do
-            module="$(echo "$report" | sed -E 's#quality-reports/(.*)/target/reports/.*#\1#')"
-            file="$(basename "$report")"
-            mkdir -p "pages/test-report/$module"
-            cp "$report" "pages/test-report/$module/$file"
-          done
-          cat > pages/assets/site.css <<'EOF'
-          :root {
-            color-scheme: light;
-            --bg: #f7f8fa;
-            --text: #17202a;
-            --muted: #5f6b7a;
-            --line: #d8dee6;
-            --panel: #ffffff;
-            --accent: #146c63;
-          }
-          body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            line-height: 1.6;
-          }
-          .page-shell {
-            width: min(1040px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 32px 0 56px;
-          }
-          .site-nav {
-            border-bottom: 1px solid var(--line);
-            background: var(--panel);
-          }
-          .site-nav .page-shell {
-            padding: 14px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-          }
-          a { color: #2d5f9a; }
-          h1, h2, h3 { line-height: 1.2; }
-          table {
-            border-collapse: collapse;
-            width: 100%;
-            background: var(--panel);
-          }
-          th, td {
-            border: 1px solid var(--line);
-            padding: 8px 10px;
-            text-align: left;
-          }
-          pre {
-            overflow-x: auto;
-            padding: 14px;
-            border-radius: 8px;
-            background: #111827;
-            color: #f9fafb;
-          }
-          code {
-            border-radius: 4px;
-          }
-          .mermaid {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            padding: 16px;
-            overflow-x: auto;
-          }
-          EOF
-          cat > pages/_layouts/default.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <title>{{ page.title | default: site.title }}</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
-          </head>
-          <body>
-            <nav class="site-nav">
-              <div class="page-shell">
-                <a href="{{ '/' | relative_url }}">Home</a>
-                <a href="{{ '/docs/' | relative_url }}">Docs</a>
-                <a href="{{ '/openapi/' | relative_url }}">OpenAPI</a>
-                <a href="{{ '/javadoc/' | relative_url }}">JavaDoc</a>
-                <a href="{{ '/coverage/' | relative_url }}">Coverage</a>
-                <a href="{{ '/test-report/' | relative_url }}">Tests</a>
-              </div>
-            </nav>
-            <main class="page-shell">
-              {{ content }}
-            </main>
-            <script type="module">
-              import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-              document.querySelectorAll("pre").forEach((pre) => {
-                const code = pre.querySelector("code");
-                const classes = [
-                  pre.getAttribute("class") || "",
-                  code?.getAttribute("class") || "",
-                  pre.parentElement?.getAttribute("class") || "",
-                  pre.parentElement?.parentElement?.getAttribute("class") || ""
-                ].join(" ");
-                if (!classes.includes("language-mermaid")) {
-                  return;
-                }
-                const diagram = document.createElement("div");
-                diagram.className = "mermaid";
-                diagram.textContent = code ? code.textContent : pre.textContent;
-                const wrapper = pre.closest(".language-mermaid") || pre;
-                wrapper.replaceWith(diagram);
-              });
-              mermaid.initialize({ startOnLoad: true, securityLevel: "strict" });
-            </script>
-          </body>
-          </html>
-          EOF
-          cat > pages/_config.yml <<'EOF'
-          title: Modular Monolith E-commerce
-          markdown: kramdown
-          plugins:
-            - jekyll-relative-links
-          relative_links:
-            enabled: true
-            collections: true
-          EOF
+      - name: Generate aggregate JavaDoc
+        run: mvn -B -DskipTests package javadoc:aggregate
+
+      - name: Assemble Pages artifact source
+        run: bash scripts/build-pages.sh
 
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
@@ -313,6 +127,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-pages
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       contents: read
       pages: write
@@ -324,4 +141,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -49,6 +49,8 @@ GitHub Pages is used only for static assets and generated documentation. The Pag
 
 Do not publish a separate `/dashboard/` alias unless the user explicitly asks for one. Do not assume GitHub Pages can host Spring Boot applications, PostgreSQL, Redis, backend services, or background workers.
 
+Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script deterministic, fail fast when required generated artifacts are missing, and do not duplicate the same assembly logic inline in workflow YAML.
+
 ## Architecture Rules
 
 - Only `ecommerce-app` is executable.
@@ -134,6 +136,7 @@ Do not publish a separate `/dashboard/` alias unless the user explicitly asks fo
 - Dashboard links should use the project Pages base path `/modular-monolith-ecommerce/` so they remain valid after publishing.
 - After changing the Pages structure, verify dashboard links, generated artifact paths, and mobile layout assumptions.
 - Generated documentation should remain Maven/CI driven, not manually edited artifacts.
+- If the Pages structure changes, update `scripts/build-pages.sh`, `.github/workflows/ci.yml`, README, and `docs/ci-and-pages.md` together when relevant.
 - Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.
 
 ## Avoid
