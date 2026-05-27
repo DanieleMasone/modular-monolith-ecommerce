@@ -3,6 +3,7 @@
 This site combines project documentation with generated JavaDoc, OpenAPI, coverage, and test reports. The site root is the static dashboard.
 
 - [Static Dashboard](../)
+- [Review Guide](review-guide.md)
 - [API Guide](api.md)
 - [Architecture](architecture.md)
 - [Business Flow](business-flow.md)

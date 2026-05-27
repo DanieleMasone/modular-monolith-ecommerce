@@ -193,6 +193,7 @@ Project documentation lives in `docs/`. The public GitHub Pages root is the stat
 | --- | --- |
 | Dashboard / Documentation site | https://danielemasone.github.io/modular-monolith-ecommerce/ |
 | Documentation | https://danielemasone.github.io/modular-monolith-ecommerce/docs/ |
+| Review Guide | https://danielemasone.github.io/modular-monolith-ecommerce/docs/review-guide.html |
 | Architecture | https://danielemasone.github.io/modular-monolith-ecommerce/docs/architecture.html |
 | Business flow | https://danielemasone.github.io/modular-monolith-ecommerce/docs/business-flow.html |
 | Trade-offs | https://danielemasone.github.io/modular-monolith-ecommerce/docs/trade-offs.html |

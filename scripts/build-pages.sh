@@ -275,6 +275,7 @@ validate_pages_source() {
   require_file "$PAGES_DIR/openapi/index.html"
   require_file "$PAGES_DIR/openapi/openapi.json"
   require_file "$PAGES_DIR/docs/index.md"
+  require_file "$PAGES_DIR/docs/review-guide.md"
   require_file "$PAGES_DIR/docs/architecture.md"
   require_file "$PAGES_DIR/docs/business-flow.md"
   require_file "$PAGES_DIR/docs/trade-offs.md"
