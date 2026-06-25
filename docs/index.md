@@ -4,6 +4,7 @@ This site combines project documentation with generated JavaDoc, OpenAPI, covera
 
 - [Static Dashboard](../)
 - [Review Guide](review-guide.md)
+- [User Guide](user-guide.md)
 - [API Guide](api.md)
 - [Architecture](architecture.md)
 - [Business Flow](business-flow.md)

@@ -9,14 +9,17 @@ This page helps reviewers inspect the repository quickly and intentionally. It g
 | Recruiter / HR | 2-5 minutes | [Dashboard](/modular-monolith-ecommerce/) and [README](https://github.com/DanieleMasone/modular-monolith-ecommerce#readme) | Project purpose, tech stack, CI badge, documentation links, and GitHub Pages site. |
 | Engineering Manager | 5-10 minutes | [Architecture](/modular-monolith-ecommerce/docs/architecture.html), [Business Flow](/modular-monolith-ecommerce/docs/business-flow.html), and [Trade-offs](/modular-monolith-ecommerce/docs/trade-offs.html) | Whether the design is pragmatic, documented, testable, and easy to explain. |
 | Senior Engineer / Architect | 15-30 minutes | Source modules, [ADR index](/modular-monolith-ecommerce/docs/adr/), [Coverage Report](/modular-monolith-ecommerce/coverage/), and [Test Report](/modular-monolith-ecommerce/test-report/) | Module boundaries, event flow, persistence rules, tests, and generated documentation. |
-| Hands-on Local Review | 30-45 minutes | Clone the repository and run the local commands below | Build behavior, integration tests, API behavior, and local developer experience. |
+| Hands-on Local Review | 30-45 minutes | [User Guide](/modular-monolith-ecommerce/docs/user-guide.html) | Build behavior, integration tests, API behavior, and local developer experience. |
 
 ## Key Links
 
 - [Dashboard](/modular-monolith-ecommerce/)
+- [User Guide](/modular-monolith-ecommerce/docs/user-guide.html)
 - [Architecture](/modular-monolith-ecommerce/docs/architecture.html)
 - [Business Flow](/modular-monolith-ecommerce/docs/business-flow.html)
 - [Trade-offs](/modular-monolith-ecommerce/docs/trade-offs.html)
+- [Testing](/modular-monolith-ecommerce/docs/testing.html)
+- [CI and Pages](/modular-monolith-ecommerce/docs/ci-and-pages.html)
 - [Architecture Decision Records](/modular-monolith-ecommerce/docs/adr/)
 - [OpenAPI UI](/modular-monolith-ecommerce/openapi/)
 - [OpenAPI JSON](/modular-monolith-ecommerce/openapi/openapi.json)
@@ -81,45 +84,7 @@ The test suite is meant to prove behavior and architecture, not only line covera
 
 ## Hands-on Local Review
 
-Requirements: Java 21, Maven 3.9+, and Docker with Docker Compose.
-
-Start infrastructure:
-
-```bash
-docker compose up -d
-```
-
-Run the full build and test suite:
-
-```bash
-mvn clean verify
-```
-
-Run the application:
-
-```bash
-mvn -pl ecommerce-app -am spring-boot:run
-```
-
-Useful API checks:
-
-```bash
-curl http://localhost:8080/api/products
-curl http://localhost:8080/api/products/1
-curl http://localhost:8080/api/orders/<order-id>
-curl http://localhost:8080/api/payments/<order-id>
-```
-
-Place an order:
-
-```bash
-curl -X POST http://localhost:8080/api/orders \
-  -H "Idempotency-Key: checkout-001" \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1,"quantity":2}'
-```
-
-The README contains the full local workflow and API examples.
+Use the [User Guide](/modular-monolith-ecommerce/docs/user-guide.html) for the operational workflow. A deep-dive reviewer should run `mvn clean verify` with Docker available, start the application, exercise the public API, and compare observed behavior with the OpenAPI reference and integration tests.
 
 ## What This Project Is Not
 

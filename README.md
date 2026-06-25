@@ -57,124 +57,24 @@ modular-monolith-ecommerce
 
 Java 21, Spring Boot 4.x, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL, Flyway, Redis, Maven multi-module, Docker Compose, JUnit 5, AssertJ, Testcontainers, ArchUnit, MapStruct, springdoc-openapi, JaCoCo, Maven JavaDoc, GitHub Actions, GitHub Pages. Exact dependency versions are centralized in the root `pom.xml`.
 
-## Running Locally
+## Quick Start
 
-Requirements:
-
-- Java 21
-- Maven 3.9+
-- Docker with Docker Compose
-
-On Windows, use Docker Desktop with the WSL 2 based engine and Linux containers. Verify that Docker is reachable before running the full suite:
-
-```bash
-docker version
-docker compose version
-```
-
-Run commands from the repository root. The project has one Maven wrapper at the root because the modules are built together.
-
-Start infrastructure:
+Requirements: Java 21, Maven 3.9+, and Docker with Docker Compose.
 
 ```bash
 docker compose up -d
-```
-
-Run the application:
-
-```bash
+mvn clean verify
 mvn -pl ecommerce-app -am spring-boot:run
 ```
 
-Build and test:
-
-```bash
-mvn clean verify
-```
-
-With Docker Desktop running, this executes the full suite, including PostgreSQL and Redis Testcontainers integration tests, and generates the aggregate coverage report under `coverage-report/target/site/jacoco-aggregate/`.
-
-Generate HTML test reports after a verification run:
-
-```bash
-mvn surefire-report:report-only surefire-report:failsafe-report-only
-```
-
-Generate JavaDoc:
-
-```bash
-mvn -DskipTests package javadoc:aggregate
-```
-
-Generate OpenAPI from the running application through Maven:
-
-```bash
-docker compose up -d --wait
-mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
-```
-
-The generated specification is written to:
-
-```txt
-ecommerce-app/target/generated-docs/openapi.json
-```
-
-## API Examples
-
-List products:
-
-```bash
-curl http://localhost:8080/api/products
-```
-
-Fetch one product:
-
-```bash
-curl http://localhost:8080/api/products/1
-```
-
-Place an order:
-
-```bash
-curl -X POST http://localhost:8080/api/orders \
-  -H "Idempotency-Key: checkout-001" \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1,"quantity":2}'
-```
-
-Repeating the same request with the same `Idempotency-Key` returns the original order with `200 OK` and does not reserve stock or create payment attempts again. Reusing the same key for a different product or quantity returns `409 Conflict`.
-
-Fetch an order:
-
-```bash
-curl http://localhost:8080/api/orders/<order-id>
-```
-
-Fetch payment result:
-
-```bash
-curl http://localhost:8080/api/payments/<order-id>
-```
-
-Example error response:
-
-```json
-{
-  "code": "INSUFFICIENT_STOCK",
-  "message": "Insufficient stock for product 1"
-}
-```
+The application starts on `http://localhost:8080`.
 
 Runtime API documentation:
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-OpenAPI metadata, paths, Swagger UI path, and group configuration are defined in:
-
-```txt
-ecommerce-app/src/main/resources/openapi.yaml
-```
+For detailed setup, report generation, API examples, idempotency behavior, and troubleshooting, read the [User Guide](https://danielemasone.github.io/modular-monolith-ecommerce/docs/user-guide.html).
 
 ## Design Principles
 
@@ -194,9 +94,13 @@ Project documentation lives in `docs/`. The public GitHub Pages root is the stat
 | Dashboard / Documentation site | https://danielemasone.github.io/modular-monolith-ecommerce/ |
 | Documentation | https://danielemasone.github.io/modular-monolith-ecommerce/docs/ |
 | Review Guide | https://danielemasone.github.io/modular-monolith-ecommerce/docs/review-guide.html |
+| User Guide | https://danielemasone.github.io/modular-monolith-ecommerce/docs/user-guide.html |
+| API Guide | https://danielemasone.github.io/modular-monolith-ecommerce/docs/api.html |
 | Architecture | https://danielemasone.github.io/modular-monolith-ecommerce/docs/architecture.html |
 | Business flow | https://danielemasone.github.io/modular-monolith-ecommerce/docs/business-flow.html |
 | Trade-offs | https://danielemasone.github.io/modular-monolith-ecommerce/docs/trade-offs.html |
+| Testing | https://danielemasone.github.io/modular-monolith-ecommerce/docs/testing.html |
+| CI and Pages | https://danielemasone.github.io/modular-monolith-ecommerce/docs/ci-and-pages.html |
 | ADR index | https://danielemasone.github.io/modular-monolith-ecommerce/docs/adr/ |
 | OpenAPI UI | https://danielemasone.github.io/modular-monolith-ecommerce/openapi/ |
 | OpenAPI JSON | https://danielemasone.github.io/modular-monolith-ecommerce/openapi/openapi.json |
