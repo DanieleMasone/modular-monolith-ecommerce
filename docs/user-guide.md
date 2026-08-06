@@ -4,6 +4,26 @@
 
 This guide explains how to run, verify, and inspect the modular monolith locally. It is intentionally operational: the README explains what the project demonstrates, while this page covers day-to-day commands and troubleshooting.
 
+<nav class="guide-toc" aria-label="User Guide sections">
+  <strong>In this guide</strong>
+  <ul>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#local-setup">Local setup</a></li>
+    <li><a href="#running-infrastructure">Running infrastructure</a></li>
+    <li><a href="#running-the-application">Running the application</a></li>
+    <li><a href="#running-tests">Running tests</a></li>
+    <li><a href="#generating-openapi">Generating OpenAPI</a></li>
+    <li><a href="#generating-javadoc">Generating JavaDoc</a></li>
+    <li><a href="#generating-coverage-reports">Generating coverage</a></li>
+    <li><a href="#generating-test-reports">Generating test reports</a></li>
+    <li><a href="#api-examples">API examples</a></li>
+    <li><a href="#idempotency-behavior">Idempotency behavior</a></li>
+    <li><a href="#error-handling">Error handling</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <li><a href="#useful-links">Useful links</a></li>
+  </ul>
+</nav>
+
 ## Requirements
 
 - Java 21
@@ -23,7 +43,7 @@ docker compose version
 
 ## Local Setup
 
-Clone the repository, then run commands from the repository root. The project has one Maven wrapper at the root because all modules are built together.
+Clone the repository, then run commands from the repository root. The project has one Maven wrapper at the root because all modules are built together. The commands below use an installed Maven binary; `./mvnw` on Linux/macOS or `.\mvnw.cmd` on Windows provides the equivalent repository-pinned entry point.
 
 Useful module map:
 
@@ -38,13 +58,7 @@ coverage-report    aggregate JaCoCo report module
 
 ## Running Infrastructure
 
-Start PostgreSQL and Redis:
-
-```bash
-docker compose up -d
-```
-
-Start and wait for healthy services:
+Start PostgreSQL and Redis, then wait for both health checks:
 
 ```bash
 docker compose up -d --wait
@@ -207,7 +221,7 @@ Order placement accepts an `Idempotency-Key` header.
 
 This keeps HTTP retries safe without adding distributed transaction machinery.
 
-## Error Handling Examples
+## Error Handling
 
 Example insufficient stock response:
 
@@ -284,15 +298,29 @@ OpenAPI generation requires the application to start successfully. If it fails:
 3. Run `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`.
 4. Check `ecommerce-app/target/generated-docs/openapi.json`.
 
+### Port Conflicts
+
+The local defaults are `8080` for Spring Boot, `5432` for PostgreSQL, and `6379` for Redis. If startup reports that an address is already in use:
+
+1. Run `docker compose ps` to check whether this project's containers already own the port.
+2. Stop an older project stack before starting this one.
+3. Check local processes using the reported port before changing repository configuration.
+4. Keep the documented defaults when possible so application, Compose, tests, and OpenAPI generation remain aligned.
+
 ## Useful Links
 
 - [Dashboard](/modular-monolith-ecommerce/)
 - [Review Guide](/modular-monolith-ecommerce/docs/review-guide.html)
 - [Architecture](/modular-monolith-ecommerce/docs/architecture.html)
+- [Business Flow](/modular-monolith-ecommerce/docs/business-flow.html)
+- [Trade-offs](/modular-monolith-ecommerce/docs/trade-offs.html)
 - [API Guide](/modular-monolith-ecommerce/docs/api.html)
 - [Testing](/modular-monolith-ecommerce/docs/testing.html)
 - [CI and Pages](/modular-monolith-ecommerce/docs/ci-and-pages.html)
+- [ADR Index](/modular-monolith-ecommerce/docs/adr/)
 - [OpenAPI UI](/modular-monolith-ecommerce/openapi/)
+- [OpenAPI JSON](/modular-monolith-ecommerce/openapi/openapi.json)
 - [JavaDoc](/modular-monolith-ecommerce/javadoc/)
 - [Coverage Report](/modular-monolith-ecommerce/coverage/)
 - [HTML Test Report](/modular-monolith-ecommerce/test-report/)
+- [GitHub Repository](https://github.com/DanieleMasone/modular-monolith-ecommerce)

@@ -5,655 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Modular Monolith E-commerce</title>
   <meta name="description" content="Static portfolio dashboard for the Modular Monolith E-commerce backend project.">
-
   <script>
     (function () {
       try {
-        const storedTheme = localStorage.getItem("portfolio-dashboard-theme");
-        document.documentElement.dataset.theme = storedTheme || "dark";
+        document.documentElement.dataset.theme = localStorage.getItem("portfolio-dashboard-theme") || "dark";
       } catch {
         document.documentElement.dataset.theme = "dark";
       }
     })();
   </script>
-
-  <style>
-    :root {
-      color-scheme: light;
-      --bg: #f6f7f9;
-      --surface: #ffffff;
-      --surface-2: #eef2f6;
-      --text: #142033;
-      --muted: #536173;
-      --line: #d6dde6;
-      --accent: #0f766e;
-      --accent-2: #1d4ed8;
-      --button-text: #ffffff;
-      --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
-    }
-
-    html[data-theme="dark"] {
-      color-scheme: dark;
-      --bg: #08111f;
-      --surface: #111c2e;
-      --surface-2: #17243a;
-      --text: #edf5ff;
-      --muted: #a9b6c7;
-      --line: #2b3d57;
-      --accent: #2dd4bf;
-      --accent-2: #93c5fd;
-      --button-text: #06111f;
-      --shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.55;
-    }
-
-    a {
-      color: var(--accent-2);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    a:focus-visible,
-    button:focus-visible {
-      outline: 3px solid var(--accent-2);
-      outline-offset: 3px;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: 12px;
-      top: 12px;
-      z-index: 20;
-      transform: translateY(-160%);
-      border-radius: 8px;
-      padding: 10px 12px;
-      background: var(--accent);
-      color: var(--button-text);
-      font-weight: 850;
-    }
-
-    .skip-link:focus {
-      transform: translateY(0);
-      text-decoration: none;
-    }
-
-    .wrap {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      border-bottom: 1px solid var(--line);
-      background: var(--surface);
-    }
-
-    .topbar-inner {
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .brand {
-      color: var(--text);
-      font-weight: 800;
-      letter-spacing: 0;
-      line-height: 1.2;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav a {
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
-      min-height: 40px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .nav a:hover {
-      color: var(--text);
-      background: var(--surface-2);
-      text-decoration: none;
-    }
-
-    .theme-toggle {
-      min-height: 38px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 8px 12px;
-      background: var(--surface-2);
-      color: var(--text);
-      font: inherit;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    header {
-      padding: 44px 0 22px;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
-      gap: 20px;
-      align-items: stretch;
-    }
-
-    .panel,
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-main {
-      padding: clamp(24px, 4vw, 40px);
-    }
-
-    .review-links {
-      padding: 22px;
-    }
-
-    .eyebrow {
-      margin: 0 0 12px;
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0;
-      text-transform: uppercase;
-    }
-
-    h1,
-    h2,
-    h3 {
-      margin-top: 0;
-      color: var(--text);
-      letter-spacing: 0;
-      line-height: 1.15;
-      overflow-wrap: anywhere;
-    }
-
-    h1 {
-      margin-bottom: 16px;
-      max-width: 780px;
-      font-size: clamp(38px, 7vw, 66px);
-      line-height: 1;
-    }
-
-    .title-word {
-      display: inline;
-    }
-
-    .nowrap {
-      white-space: nowrap;
-    }
-
-    h2 {
-      margin-bottom: 12px;
-      font-size: clamp(24px, 3vw, 32px);
-    }
-
-    h3 {
-      margin-bottom: 8px;
-      font-size: 18px;
-    }
-
-    p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      overflow-wrap: anywhere;
-    }
-
-    .lead {
-      max-width: 760px;
-      color: var(--muted);
-      font-size: clamp(17px, 2vw, 20px);
-      overflow-wrap: anywhere;
-    }
-
-    .badge-row,
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .badge {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 7px 10px;
-      background: var(--surface-2);
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .actions {
-      margin-top: 24px;
-    }
-
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      border: 1px solid var(--accent);
-      border-radius: 8px;
-      padding: 10px 16px;
-      background: var(--accent);
-      color: var(--button-text);
-      font-weight: 850;
-      text-align: center;
-    }
-
-    .button:hover {
-      color: var(--button-text);
-      text-decoration: none;
-    }
-
-    .button.secondary {
-      border-color: var(--line);
-      background: var(--surface-2);
-      color: var(--text);
-    }
-
-    .button.secondary:hover {
-      color: var(--text);
-    }
-
-    .link-list {
-      display: grid;
-      gap: 9px;
-      padding: 0;
-      margin: 0;
-      list-style: none;
-    }
-
-    .link-list a {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 9px 11px;
-      background: var(--surface-2);
-      color: var(--text);
-      font-weight: 800;
-    }
-
-    .link-list a::after {
-      content: "";
-      flex: 0 0 auto;
-      width: 8px;
-      height: 8px;
-      border-right: 2px solid var(--muted);
-      border-top: 2px solid var(--muted);
-      transform: rotate(45deg);
-    }
-
-    .link-list a:hover {
-      border-color: var(--accent);
-      text-decoration: none;
-    }
-
-    main {
-      padding: 18px 0 58px;
-    }
-
-    .section {
-      margin-top: 20px;
-      scroll-margin-top: 84px;
-    }
-
-    .panel {
-      padding: clamp(20px, 3vw, 30px);
-    }
-
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .two {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .three {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .card {
-      padding: 18px;
-      box-shadow: none;
-    }
-
-    .module-map {
-      display: grid;
-      grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.4fr) minmax(220px, 0.8fr);
-      gap: 14px;
-      align-items: stretch;
-    }
-
-    .module-column,
-    .module-stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .module-stack {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .module-box {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface-2);
-      padding: 14px;
-    }
-
-    .module-box strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--text);
-    }
-
-    .module-box span {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .module-box,
-    .flow-step,
-    .quality-item,
-    .card {
-      min-width: 0;
-    }
-
-    .flow {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .flow-step {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: var(--surface);
-    }
-
-    .flow-step b {
-      display: block;
-      margin-bottom: 4px;
-      color: var(--text);
-    }
-
-    .quality-list {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .quality-item {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: var(--surface-2);
-    }
-
-    .quality-item strong {
-      display: block;
-      color: var(--text);
-    }
-
-    pre {
-      margin: 0;
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      background: #020617;
-      color: #f8fafc;
-    }
-
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 0.95em;
-    }
-
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 24px 0;
-      background: var(--surface);
-      color: var(--muted);
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    @media (max-width: 980px) {
-      .hero,
-      .two,
-      .three,
-      .module-map {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar-inner {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 10px;
-        padding: 12px 0;
-      }
-
-      .nav {
-        width: 100%;
-        flex-wrap: wrap;
-        overflow-x: visible;
-      }
-
-      .nav a {
-        flex: 1 1 140px;
-        min-height: 44px;
-        border: 1px solid var(--line);
-        background: var(--surface-2);
-        color: var(--text);
-      }
-
-      .theme-toggle {
-        flex: 1 1 160px;
-        min-height: 44px;
-      }
-
-      .module-stack {
-        grid-template-columns: 1fr;
-      }
-
-      .quality-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      .wrap {
-        width: min(100% - 22px, 1120px);
-      }
-
-      .topbar {
-        position: static;
-      }
-
-      body {
-        overflow-x: clip;
-      }
-
-      header {
-        padding: 22px 0 14px;
-      }
-
-      .topbar-inner {
-        min-height: 56px;
-      }
-
-      .brand {
-        max-width: none;
-        font-size: 16px;
-        white-space: normal;
-      }
-
-      .nav {
-        gap: 6px;
-      }
-
-      .nav a {
-        flex-basis: calc(50% - 3px);
-        padding: 8px;
-        font-size: 13px;
-      }
-
-      .theme-toggle {
-        flex-basis: 100%;
-      }
-
-      .hero-main,
-      .review-links,
-      .panel,
-      .card {
-        padding: 16px;
-      }
-
-      h1 {
-        font-size: clamp(31px, 9vw, 40px);
-        line-height: 1.06;
-        max-width: none;
-      }
-
-      .title-word {
-        display: block;
-      }
-
-      h2 {
-        font-size: 24px;
-      }
-
-      .lead {
-        font-size: 16px;
-        max-width: 31ch;
-      }
-
-      .badge-row {
-        gap: 7px;
-      }
-
-      .badge {
-        padding: 6px 8px;
-        font-size: 12px;
-      }
-
-      .actions {
-        flex-direction: column;
-        margin-top: 18px;
-      }
-
-      .button {
-        width: 100%;
-      }
-
-      .link-list a {
-        align-items: center;
-        min-height: 46px;
-      }
-
-      .quality-list,
-      .flow {
-        grid-template-columns: 1fr;
-      }
-
-      .footer-inner {
-        display: grid;
-        gap: 10px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="./assets/site.css">
 </head>
-
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
+
 <nav class="topbar" aria-label="Primary navigation">
   <div class="wrap topbar-inner">
     <a class="brand" href="/modular-monolith-ecommerce/" aria-label="Dashboard home">Modular Monolith E-commerce</a>
-
     <div class="nav">
       <a href="#architecture">Architecture</a>
       <a href="#artifacts">Artifacts</a>
       <a href="#run">Run locally</a>
-      <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Switch to light mode">Light mode</button>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">Light mode</button>
     </div>
   </div>
 </nav>
 
-<header>
+<header class="dashboard-header">
   <div class="wrap hero">
     <section class="hero-main panel" aria-labelledby="page-title">
       <p class="eyebrow">Backend portfolio project</p>
 
-      <div class="badge-row" aria-label="Technology badges">
+      <div class="badge-row" aria-label="Technology highlights">
         <span class="badge">Java 21</span>
-        <span class="badge">Spring Boot 4</span>
+        <span class="badge">Spring Boot 4.x</span>
         <span class="badge">PostgreSQL</span>
         <span class="badge">Redis</span>
         <span class="badge">Testcontainers</span>
         <span class="badge">ArchUnit</span>
       </div>
 
-      <h1 id="page-title">
+      <h1 id="page-title" class="dashboard-title">
         <span class="title-word">Modular</span>
         <span class="title-word">Monolith</span>
         <span class="title-word nowrap">E-commerce</span>
@@ -665,31 +57,24 @@
         generated API documentation, coverage, and CI-published documentation.
       </p>
 
-      <div class="actions" aria-label="Main actions">
-        <a class="button" href="/modular-monolith-ecommerce/docs/">Read the docs</a>
-        <a class="button secondary" href="/modular-monolith-ecommerce/docs/review-guide.html">Review guide</a>
-        <a class="button secondary" href="/modular-monolith-ecommerce/docs/user-guide.html">User guide</a>
-        <a class="button secondary" href="/modular-monolith-ecommerce/openapi/">OpenAPI UI</a>
-        <a class="button secondary" href="https://github.com/DanieleMasone/modular-monolith-ecommerce">GitHub repository</a>
+      <div class="actions" aria-label="Main review paths">
+        <a class="button" href="/modular-monolith-ecommerce/docs/review-guide.html">Review the project</a>
+        <a class="button secondary" href="/modular-monolith-ecommerce/docs/user-guide.html">Run it locally</a>
+        <a class="button secondary" href="/modular-monolith-ecommerce/openapi/">Inspect the API</a>
+        <a class="button secondary" href="https://github.com/DanieleMasone/modular-monolith-ecommerce">View source</a>
       </div>
     </section>
 
     <aside id="artifacts" class="review-links panel" aria-labelledby="review-links-title">
       <h2 id="review-links-title">Published Artifacts</h2>
-      <p>Everything here is static content generated or assembled by CI.</p>
+      <p>Static documentation and reports assembled by CI.</p>
 
       <ul class="link-list">
-        <li><a href="/modular-monolith-ecommerce/docs/">Documentation</a></li>
-        <li><a href="/modular-monolith-ecommerce/docs/review-guide.html">Review guide</a></li>
-        <li><a href="/modular-monolith-ecommerce/docs/user-guide.html">User guide</a></li>
+        <li><a href="/modular-monolith-ecommerce/docs/">Documentation index</a></li>
         <li><a href="/modular-monolith-ecommerce/docs/architecture.html">Architecture</a></li>
         <li><a href="/modular-monolith-ecommerce/docs/business-flow.html">Business flow</a></li>
         <li><a href="/modular-monolith-ecommerce/docs/trade-offs.html">Trade-offs</a></li>
-        <li><a href="/modular-monolith-ecommerce/docs/testing.html">Testing</a></li>
-        <li><a href="/modular-monolith-ecommerce/docs/ci-and-pages.html">CI &amp; Pages</a></li>
         <li><a href="/modular-monolith-ecommerce/docs/adr/">ADR index</a></li>
-        <li><a href="/modular-monolith-ecommerce/openapi/">OpenAPI UI</a></li>
-        <li><a href="/modular-monolith-ecommerce/openapi/openapi.json">OpenAPI JSON</a></li>
         <li><a href="/modular-monolith-ecommerce/javadoc/">JavaDoc</a></li>
         <li><a href="/modular-monolith-ecommerce/coverage/">Coverage report</a></li>
         <li><a href="/modular-monolith-ecommerce/test-report/">Test report</a></li>
@@ -698,7 +83,7 @@
   </div>
 </header>
 
-<main id="main-content" class="wrap">
+<main id="main-content" class="wrap dashboard-main">
   <section id="architecture" class="section panel" aria-labelledby="module-map-title">
     <h2 id="module-map-title">Module Map</h2>
     <p>
@@ -781,7 +166,7 @@
     <article class="card">
       <h3>What GitHub Pages serves</h3>
       <p>
-        This landing page, Markdown documentation, generated OpenAPI JSON,
+        This dashboard, project documentation, generated OpenAPI JSON,
         Swagger UI, JavaDoc, JaCoCo coverage, and HTML test reports.
       </p>
     </article>
@@ -797,11 +182,12 @@
 
   <section id="run" class="section panel" aria-labelledby="run-title">
     <h2 id="run-title">How to Run Locally</h2>
-    <p>Start PostgreSQL and Redis, then run the Spring Boot application from the executable module.</p>
+    <p>Start PostgreSQL and Redis, verify the project, then run the executable module.</p>
 
     <pre><code>docker compose up -d
-mvn -pl ecommerce-app -am spring-boot:run
-mvn clean verify</code></pre>
+mvn clean verify
+mvn -pl ecommerce-app -am spring-boot:run</code></pre>
+    <a href="/modular-monolith-ecommerce/docs/user-guide.html">Read the complete setup and troubleshooting guide</a>
   </section>
 
   <section class="section panel" aria-labelledby="quality-title">
@@ -821,39 +207,13 @@ mvn clean verify</code></pre>
   </section>
 </main>
 
-<footer>
+<footer class="site-footer">
   <div class="wrap footer-inner">
     <span>Static GitHub Pages dashboard for a backend portfolio project.</span>
     <a href="https://github.com/DanieleMasone/modular-monolith-ecommerce/actions/workflows/ci.yml">CI workflow</a>
   </div>
 </footer>
 
-<script>
-  const toggle = document.getElementById("theme-toggle");
-
-  function persistTheme(theme) {
-    try {
-      localStorage.setItem("portfolio-dashboard-theme", theme);
-    } catch {
-      // The selected theme still applies for the current page load.
-    }
-  }
-
-  function applyTheme(theme) {
-    document.documentElement.dataset.theme = theme;
-    persistTheme(theme);
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    toggle.textContent = `${nextTheme[0].toUpperCase()}${nextTheme.slice(1)} mode`;
-    toggle.setAttribute("aria-label", `Switch to ${nextTheme} mode`);
-    toggle.setAttribute("aria-pressed", String(theme === "light"));
-  }
-
-  applyTheme(document.documentElement.dataset.theme || "dark");
-
-  toggle.addEventListener("click", () => {
-    const currentTheme = document.documentElement.dataset.theme || "dark";
-    applyTheme(currentTheme === "dark" ? "light" : "dark");
-  });
-</script>
+<script src="./assets/theme.js" defer></script>
 </body>
 </html>

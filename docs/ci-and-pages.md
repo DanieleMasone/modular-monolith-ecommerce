@@ -20,6 +20,7 @@ For local Windows verification, Docker Desktop should be running with the WSL 2 
 - runs the `generate-openapi` Maven profile
 - generates aggregate JavaDoc with Maven
 - uses the static dashboard as the site root
+- applies the shared responsive dashboard/documentation styling
 - adds aggregate JaCoCo coverage
 - adds HTML test reports
 - assembles a static Pages source directory with `scripts/build-pages.sh`
@@ -57,6 +58,8 @@ The CI artifact publishes:
 
 Generated outputs are ignored by Git and should not be committed. The repository owns the source documentation and build configuration; CI owns generated JavaDoc, OpenAPI, Swagger UI, and the final Pages artifact.
 
+`docs/user-guide.md` is the canonical User Guide source. Jekyll converts it to `/docs/user-guide.html`; the generated HTML is never maintained or committed separately. The dashboard, Jekyll layout, shared stylesheet, and theme behavior live under `dashboard/` and are copied into the Pages source by the assembly script.
+
 ## Source vs Generated Documentation
 
 The `docs/` directory is not generated output. It contains reviewed source documentation and ADRs, so it should remain versioned in Git and should not be added to `.gitignore`. The generated documentation artifacts are:
@@ -81,3 +84,5 @@ bash scripts/build-pages.sh
 On Windows, run the command from Git Bash if `bash` resolves to WSL and no Linux distribution is installed.
 
 The script intentionally fails if a required artifact is missing, such as OpenAPI JSON, aggregate JavaDoc, aggregate coverage, or an expected Surefire/Failsafe HTML report. It writes only ignored staging output under `pages/` and `_site/`; do not commit those directories.
+
+The Jekyll step converts copied Markdown files into final HTML. CI then checks the generated dashboard, User Guide, OpenAPI document, JavaDoc, coverage, and test-report entry points before uploading the Pages artifact.

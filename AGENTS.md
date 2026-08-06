@@ -130,11 +130,14 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 
 - Keep README and files under `docs/` in English.
 - Keep `docs/` versioned. It is source documentation for the Pages build, not generated output.
+- Keep README concise and portfolio-oriented. Detailed setup, API usage, report generation, and troubleshooting belong in `docs/user-guide.md`.
+- `docs/user-guide.md` is the canonical User Guide source; CI/Jekyll generates `/docs/user-guide.html`. Do not commit the generated HTML.
 - Add ADRs for meaningful architectural decisions.
 - Document externally visible API behavior through OpenAPI annotations or configuration when relevant.
 - Update documentation when a feature changes business flow, module responsibility, CI behavior, or a deliberate trade-off.
 - Dashboard links should use the project Pages base path `/modular-monolith-ecommerce/` so they remain valid after publishing.
-- After changing the Pages structure, verify dashboard links, generated artifact paths, and mobile layout assumptions.
+- Dashboard and documentation styling is shared from `dashboard/assets/`; keep public pages responsive and accessible at mobile, tablet, and desktop widths.
+- After changing the Pages structure, verify dashboard links, generated artifact paths, theme behavior, keyboard focus, and horizontal overflow.
 - Generated documentation should remain Maven/CI driven, not manually edited artifacts.
 - If the Pages structure changes, update `scripts/build-pages.sh`, `.github/workflows/ci.yml`, README, and `docs/ci-and-pages.md` together when relevant.
 - Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.

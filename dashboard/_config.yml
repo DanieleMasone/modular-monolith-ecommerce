@@ -1,0 +1,9 @@
+title: Modular Monolith E-commerce
+url: https://danielemasone.github.io
+baseurl: /modular-monolith-ecommerce
+markdown: kramdown
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true

@@ -117,6 +117,16 @@ jobs:
           source: ./pages
           destination: ./_site
 
+      - name: Validate Pages output
+        run: |
+          test -f _site/index.html
+          test -f _site/docs/index.html
+          test -f _site/docs/user-guide.html
+          test -f _site/openapi/openapi.json
+          test -f _site/javadoc/index.html
+          test -f _site/coverage/index.html
+          test -f _site/test-report/index.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
