@@ -104,7 +104,7 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 - OpenAPI runtime configuration lives in `ecommerce-app/src/main/resources/openapi.yaml`.
 - Expected OpenAPI output: `ecommerce-app/target/generated-docs/openapi.json`.
 - JaCoCo aggregate output is generated under `coverage-report/target/site/jacoco-aggregate`.
-- HTML test reports are generated under module `target/reports` directories.
+- HTML test reports and their CSS/JavaScript/image assets are generated under module `target/reports` directories. Pages must publish each report with those assets, not the HTML file alone.
 - Do not commit generated OpenAPI, JavaDoc, coverage, test report, Maven site, MapStruct implementation, `pages/`, `_site/`, or `target/` artifacts.
 - Generated content should live only under build output folders such as `target/` or temporary CI staging directories that are explicitly ignored.
 

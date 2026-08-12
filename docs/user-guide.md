@@ -137,7 +137,7 @@ ecommerce-app/src/main/resources/openapi.yaml
 Generate aggregate JavaDoc:
 
 ```bash
-mvn -DskipTests package javadoc:aggregate
+mvn -DskipTests javadoc:aggregate
 ```
 
 Generated output:

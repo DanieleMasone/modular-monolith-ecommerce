@@ -55,12 +55,10 @@ jobs:
           name: quality-reports
           path: |
             coverage-report/target/site/jacoco-aggregate/**
-            shared-kernel/target/reports/surefire.html
-            catalog/target/reports/surefire.html
-            orders/target/reports/surefire.html
-            payment/target/reports/surefire.html
-            ecommerce-app/target/reports/surefire.html
-            ecommerce-app/target/reports/failsafe.html
+            catalog/target/reports/**
+            orders/target/reports/**
+            payment/target/reports/**
+            ecommerce-app/target/reports/**
           if-no-files-found: error
 
   build-pages:
@@ -106,7 +104,7 @@ jobs:
         run: docker compose down -v
 
       - name: Generate aggregate JavaDoc
-        run: mvn -B -DskipTests package javadoc:aggregate
+        run: mvn -B -DskipTests javadoc:aggregate
 
       - name: Assemble Pages artifact source
         run: bash scripts/build-pages.sh

@@ -13,7 +13,8 @@ Fast unit tests cover domain and use-case behavior:
 - order event publication
 - payment listener delegation
 - payment attempt creation and duplicate event handling
-- REST mapper generation through MapStruct compilation
+
+MapStruct mappers are exercised through API integration tests while their generated implementations are validated by compilation.
 
 Unit tests use small hand-written fakes for application-service collaborators. That keeps the behavior explicit and avoids bytecode-agent warnings for simple interaction tests.
 
@@ -48,9 +49,12 @@ Rules include:
 - stock reservation persistence
 - `OrderPlacedEvent` triggering payment handling
 - invalid quantity API response
+- malformed JSON, unsupported media type, and unsupported method responses
 - unknown product API response
 - unknown product detail API response
+- unknown order and payment lookup responses
 - insufficient stock API response
+- catalog cache eviction after stock reservation
 
 Run the full suite:
 

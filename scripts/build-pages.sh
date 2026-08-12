@@ -44,11 +44,11 @@ write_openapi_ui() {
   <title>Modular Monolith E-commerce API</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Generated OpenAPI reference for the Modular Monolith E-commerce project.">
-  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.32.13/swagger-ui.css">
 </head>
 <body>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.32.13/swagger-ui-bundle.js"></script>
   <script>
     window.onload = () => {
       window.ui = SwaggerUIBundle({
@@ -101,7 +101,6 @@ write_test_report_index() {
     <h1>HTML Test Reports</h1>
     <p>Generated from Maven Surefire and Failsafe XML outputs during CI.</p>
     <ul>
-      <li><a href="./shared-kernel/surefire.html">shared-kernel Surefire report</a></li>
       <li><a href="./catalog/surefire.html">catalog Surefire report</a></li>
       <li><a href="./orders/surefire.html">orders Surefire report</a></li>
       <li><a href="./payment/surefire.html">payment Surefire report</a></li>
@@ -116,26 +115,80 @@ EOF
 }
 
 copy_test_reports() {
-  local expected module file source
-  local -a expected_reports=(
-    "shared-kernel:surefire.html"
-    "catalog:surefire.html"
-    "orders:surefire.html"
-    "payment:surefire.html"
-    "ecommerce-app:surefire.html"
-    "ecommerce-app:failsafe.html"
-  )
+  local module source
+  local -a modules=(catalog orders payment ecommerce-app)
 
-  for expected in "${expected_reports[@]}"; do
-    module="${expected%%:*}"
-    file="${expected#*:}"
-    source="$QUALITY_REPORTS_DIR/$module/target/reports/$file"
-    if [[ ! -f "$source" ]]; then
-      source="$module/target/reports/$file"
+  for module in "${modules[@]}"; do
+    source="$QUALITY_REPORTS_DIR/$module/target/reports"
+    if [[ ! -d "$source" ]]; then
+      source="$module/target/reports"
     fi
-    require_file "$source"
+    require_dir "$source"
     mkdir -p "$PAGES_DIR/test-report/$module"
-    cp "$source" "$PAGES_DIR/test-report/$module/$file"
+    cp -R "$source"/. "$PAGES_DIR/test-report/$module/"
+  done
+}
+
+improve_generated_report_responsiveness() {
+  local file module
+
+  require_file "$PAGES_DIR/coverage/jacoco-resources/report.css"
+  while IFS= read -r -d '' file; do
+    if ! grep -q 'name="viewport"' "$file"; then
+      sed -i 's|<head>|<head><meta name="viewport" content="width=device-width, initial-scale=1"/>|' "$file"
+    fi
+  done < <(find "$PAGES_DIR/coverage" -name "*.html" -print0)
+
+  cat >> "$PAGES_DIR/coverage/jacoco-resources/report.css" <<'EOF'
+
+/* Keep generated JaCoCo tables usable without widening the mobile page. */
+@media (max-width: 720px) {
+  body {
+    max-width: calc(100vw - 16px);
+  }
+
+  table.coverage {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  pre.source {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .breadcrumb .info,
+  .footer .right {
+    float: none;
+  }
+}
+EOF
+
+  for module in catalog orders payment ecommerce-app; do
+    cat >> "$PAGES_DIR/test-report/$module/css/site.css" <<'EOF'
+
+/* Keep generated Maven report tables usable without widening the mobile page. */
+@media (max-width: 767px) {
+  #bodyColumn {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  #bodyColumn table.table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  #bodyColumn pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+EOF
   done
 }
 
@@ -176,12 +229,22 @@ validate_pages_source() {
   require_file "$PAGES_DIR/javadoc/index.html"
   require_file "$PAGES_DIR/coverage/index.html"
   require_file "$PAGES_DIR/test-report/index.html"
-  require_file "$PAGES_DIR/test-report/shared-kernel/surefire.html"
   require_file "$PAGES_DIR/test-report/catalog/surefire.html"
   require_file "$PAGES_DIR/test-report/orders/surefire.html"
   require_file "$PAGES_DIR/test-report/payment/surefire.html"
   require_file "$PAGES_DIR/test-report/ecommerce-app/surefire.html"
   require_file "$PAGES_DIR/test-report/ecommerce-app/failsafe.html"
+
+  local module
+  for module in catalog orders payment ecommerce-app; do
+    require_dir "$PAGES_DIR/test-report/$module/css"
+    require_dir "$PAGES_DIR/test-report/$module/js"
+    require_dir "$PAGES_DIR/test-report/$module/images"
+  done
+
+  if grep -R -F '${project.url}' "$PAGES_DIR/test-report" >/dev/null; then
+    fail "unresolved Maven project URL in generated test reports"
+  fi
 
   if [[ -e "$PAGES_DIR/dashboard" ]]; then
     fail "dashboard alias should not be published"
@@ -218,6 +281,7 @@ cp -R "$COVERAGE_SOURCE"/. "$PAGES_DIR/coverage/"
 
 write_test_report_index
 copy_test_reports
+improve_generated_report_responsiveness
 validate_pages_source
 
 echo "Pages source assembled in $PAGES_DIR"

@@ -43,6 +43,8 @@ Important failure cases:
 | `IDEMPOTENCY_KEY_CONFLICT` | `409` | The idempotency key was already used for a different order request. |
 | `ORDER_NOT_FOUND` | `404` | The requested order id does not exist. |
 | `PAYMENT_NOT_FOUND` | `404` | No payment attempt exists for the order id. |
+| `METHOD_NOT_ALLOWED` | `405` | The endpoint does not support the requested HTTP method. |
+| `UNSUPPORTED_MEDIA_TYPE` | `415` | The request content type is not supported. |
 
 Example error:
 

@@ -2,8 +2,10 @@ package com.dmasone.identity.ecommerceapp.web;
 
 import com.dmasone.identity.sharedkernel.domain.DomainException;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -43,14 +45,43 @@ public class RestExceptionHandler {
 
     @ExceptionHandler({
             ConstraintViolationException.class,
-            MethodArgumentTypeMismatchException.class,
-            HttpMediaTypeNotSupportedException.class,
-            HttpRequestMethodNotSupportedException.class
+            MethodArgumentTypeMismatchException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(Exception exception) {
         return ResponseEntity
                 .badRequest()
                 .body(new ApiError("BAD_REQUEST", exception.getMessage()));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleUnreadableRequestBody(HttpMessageNotReadableException exception) {
+        return ResponseEntity
+                .badRequest()
+                .body(new ApiError("BAD_REQUEST", "Request body is malformed or missing"));
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ApiError> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException exception) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(exception.getSupportedMediaTypes());
+        return new ResponseEntity<>(
+                new ApiError("UNSUPPORTED_MEDIA_TYPE", "Content type is not supported"),
+                headers,
+                HttpStatus.UNSUPPORTED_MEDIA_TYPE
+        );
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiError> handleMethodNotAllowed(HttpRequestMethodNotSupportedException exception) {
+        HttpHeaders headers = new HttpHeaders();
+        if (exception.getSupportedHttpMethods() != null) {
+            headers.setAllow(exception.getSupportedHttpMethods());
+        }
+        return new ResponseEntity<>(
+                new ApiError("METHOD_NOT_ALLOWED", "HTTP method is not supported for this endpoint"),
+                headers,
+                HttpStatus.METHOD_NOT_ALLOWED
+        );
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

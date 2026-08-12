@@ -28,9 +28,9 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers(disabledWithoutDocker = true)
@@ -45,7 +45,7 @@ import org.testcontainers.utility.DockerImageName;
 class EcommerceApplicationIT {
 
     @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17-alpine")
+    static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:17-alpine")
             .withDatabaseName("ecommerce")
             .withUsername("ecommerce")
             .withPassword("ecommerce");
@@ -156,6 +156,10 @@ class EcommerceApplicationIT {
 
     @Test
     void orderPlacementEndpointReservesStockPublishesEventAndCreatesPayment() throws Exception {
+        mockMvc.perform(get("/api/products/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.availableQuantity").value(10));
+
         String response = mockMvc.perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -183,6 +187,10 @@ class EcommerceApplicationIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orderId").value(orderId.toString()))
                 .andExpect(jsonPath("$.status").value("AUTHORIZED"));
+
+        mockMvc.perform(get("/api/products/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.availableQuantity").value(8));
 
         Integer remainingStock = jdbcTemplate.queryForObject(
                 "select available_quantity from catalog_products where id = 1",
@@ -277,6 +285,32 @@ class EcommerceApplicationIT {
     }
 
     @Test
+    void orderPlacementRejectsMalformedJsonWithStructuredError() throws Exception {
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{not-json}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+                .andExpect(jsonPath("$.message").value("Request body is malformed or missing"));
+    }
+
+    @Test
+    void orderPlacementRejectsUnsupportedMediaType() throws Exception {
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content("productId=1&quantity=1"))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.code").value("UNSUPPORTED_MEDIA_TYPE"));
+    }
+
+    @Test
+    void orderCollectionRejectsUnsupportedMethod() throws Exception {
+        mockMvc.perform(get("/api/orders"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.code").value("METHOD_NOT_ALLOWED"));
+    }
+
+    @Test
     void orderPlacementRejectsUnknownProduct() throws Exception {
         mockMvc.perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -299,6 +333,24 @@ class EcommerceApplicationIT {
     }
 
     @Test
+    void orderLookupRejectsUnknownOrder() throws Exception {
+        UUID orderId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/orders/{id}", orderId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("ORDER_NOT_FOUND"));
+    }
+
+    @Test
+    void paymentLookupRejectsUnknownOrder() throws Exception {
+        UUID orderId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/payments/{orderId}", orderId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("PAYMENT_NOT_FOUND"));
+    }
+
+    @Test
     void orderPlacementRejectsInsufficientStock() throws Exception {
         mockMvc.perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -311,6 +363,17 @@ class EcommerceApplicationIT {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("INSUFFICIENT_STOCK"))
                 .andExpect(jsonPath("$.message").value("Insufficient stock for product 1"));
+
+        Integer orderCount = jdbcTemplate.queryForObject("select count(*) from customer_orders", Integer.class);
+        Integer paymentCount = jdbcTemplate.queryForObject("select count(*) from payment_attempts", Integer.class);
+        Integer remainingStock = jdbcTemplate.queryForObject(
+                "select available_quantity from catalog_products where id = 1",
+                Integer.class
+        );
+
+        assertThat(orderCount).isZero();
+        assertThat(paymentCount).isZero();
+        assertThat(remainingStock).isEqualTo(10);
     }
 
     private void clearCaches() {
