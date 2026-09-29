@@ -90,6 +90,12 @@ jobs:
           name: quality-reports
           path: quality-reports
 
+      - name: Download test result reports
+        uses: actions/download-artifact@v8
+        with:
+          name: test-reports
+          path: target/test-reports
+
       - name: Check Docker Compose
         run: docker compose version
 
@@ -107,6 +113,8 @@ jobs:
         run: mvn -B -DskipTests javadoc:aggregate
 
       - name: Assemble Pages artifact source
+        env:
+          TEST_REPORTS_DIR: target/test-reports
         run: bash scripts/build-pages.sh
 
       - name: Build with Jekyll
@@ -120,6 +128,8 @@ jobs:
           test -f _site/index.html
           test -f _site/docs/index.html
           test -f _site/docs/user-guide.html
+          test -f _site/badges/coverage.json
+          test -f _site/badges/tests.json
           test -f _site/openapi/openapi.json
           test -f _site/javadoc/index.html
           test -f _site/coverage/index.html

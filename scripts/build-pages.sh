@@ -6,6 +6,7 @@ cd "$ROOT_DIR"
 
 PAGES_DIR="${PAGES_DIR:-pages}"
 QUALITY_REPORTS_DIR="${QUALITY_REPORTS_DIR:-quality-reports}"
+TEST_REPORTS_DIR="${TEST_REPORTS_DIR:-.}"
 
 fail() {
   echo "Pages assembly failed: $*" >&2
@@ -129,6 +130,49 @@ copy_test_reports() {
   done
 }
 
+write_quality_badges() {
+  local coverage_xml line_counter missed covered total_lines coverage_percent
+  local -a test_reports=()
+  local tests failures errors
+
+  coverage_xml="$COVERAGE_SOURCE/jacoco.xml"
+  require_file "$coverage_xml"
+  line_counter="$(grep -o '<counter type="LINE"[^>]*/>' "$coverage_xml" | tail -n 1)"
+  [[ -n "$line_counter" ]] || fail "aggregate JaCoCo XML has no LINE counter"
+  read -r missed covered <<< "$(sed -n 's/.*missed="\([0-9][0-9]*\)".*covered="\([0-9][0-9]*\)".*/\1 \2/p' <<< "$line_counter")"
+  [[ -n "${missed:-}" && -n "${covered:-}" ]] || fail "cannot read aggregate JaCoCo line coverage"
+
+  total_lines=$((missed + covered))
+  (( total_lines > 0 )) || fail "aggregate JaCoCo line count is zero"
+  coverage_percent=$(( (covered * 100 + total_lines / 2) / total_lines ))
+
+  require_dir "$TEST_REPORTS_DIR"
+  mapfile -d '' test_reports < <(find "$TEST_REPORTS_DIR" -type f \( \
+    -path '*/target/surefire-reports/TEST-*.xml' -o \
+    -path '*/target/failsafe-reports/TEST-*.xml' \
+  \) -print0)
+  (( ${#test_reports[@]} > 0 )) || fail "no Surefire or Failsafe XML reports found"
+
+  read -r tests failures errors <<< "$(awk '
+    function attribute(name, match_text) {
+      match_text = name "=\"[0-9]+\""
+      return match($0, match_text) ? substr($0, RSTART + length(name) + 2, RLENGTH - length(name) - 3) : 0
+    }
+    /<testsuite[[:space:]]/ {
+      tests += attribute("tests")
+      failures += attribute("failures")
+      errors += attribute("errors")
+    }
+    END { print tests, failures, errors }
+  ' "${test_reports[@]}")"
+  (( tests > 0 )) || fail "reported test count is zero"
+  (( failures == 0 && errors == 0 )) || fail "cannot publish passing test badge from failing reports"
+
+  mkdir -p "$PAGES_DIR/badges"
+  printf '{"schemaVersion":1,"label":"coverage","message":"%s%% lines","color":"brightgreen"}\n' "$coverage_percent" > "$PAGES_DIR/badges/coverage.json"
+  printf '{"schemaVersion":1,"label":"tests","message":"%s passing","color":"brightgreen"}\n' "$tests" > "$PAGES_DIR/badges/tests.json"
+}
+
 improve_generated_report_responsiveness() {
   local file module
 
@@ -216,6 +260,8 @@ validate_pages_source() {
   require_file "$PAGES_DIR/_config.yml"
   require_file "$PAGES_DIR/openapi/index.html"
   require_file "$PAGES_DIR/openapi/openapi.json"
+  require_file "$PAGES_DIR/badges/coverage.json"
+  require_file "$PAGES_DIR/badges/tests.json"
   require_file "$PAGES_DIR/docs/index.md"
   require_file "$PAGES_DIR/docs/review-guide.md"
   require_file "$PAGES_DIR/docs/user-guide.md"
@@ -259,6 +305,7 @@ require_file "dashboard/_config.yml"
 require_dir "docs"
 require_file "ecommerce-app/target/generated-docs/openapi.json"
 require_dir "target/reports/apidocs"
+require_dir "$TEST_REPORTS_DIR"
 
 COVERAGE_SOURCE="$QUALITY_REPORTS_DIR/coverage-report/target/site/jacoco-aggregate"
 if [[ ! -d "$COVERAGE_SOURCE" ]]; then
@@ -267,7 +314,7 @@ fi
 require_dir "$COVERAGE_SOURCE"
 
 rm -rf -- "$PAGES_DIR" _site
-mkdir -p "$PAGES_DIR"/{docs,openapi,javadoc,coverage,test-report}
+mkdir -p "$PAGES_DIR"/{badges,docs,openapi,javadoc,coverage,test-report}
 
 cp -R dashboard/. "$PAGES_DIR/"
 cp -R docs/. "$PAGES_DIR/docs/"
@@ -282,6 +329,7 @@ cp -R "$COVERAGE_SOURCE"/. "$PAGES_DIR/coverage/"
 write_test_report_index
 copy_test_reports
 improve_generated_report_responsiveness
+write_quality_badges
 validate_pages_source
 
 echo "Pages source assembled in $PAGES_DIR"

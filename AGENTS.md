@@ -105,6 +105,7 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 - Expected OpenAPI output: `ecommerce-app/target/generated-docs/openapi.json`.
 - JaCoCo aggregate output is generated under `coverage-report/target/site/jacoco-aggregate`.
 - HTML test reports and their CSS/JavaScript/image assets are generated under module `target/reports` directories. Pages must publish each report with those assets, not the HTML file alone.
+- Pages assembly derives dynamic coverage and test badges from the aggregate JaCoCo XML and Surefire/Failsafe XML reports. Keep their JSON endpoints under generated `pages/badges/`; never manually encode metric values in README.
 - Do not commit generated OpenAPI, JavaDoc, coverage, test report, Maven site, MapStruct implementation, `pages/`, `_site/`, or `target/` artifacts.
 - Generated content should live only under build output folders such as `target/` or temporary CI staging directories that are explicitly ignored.
 
