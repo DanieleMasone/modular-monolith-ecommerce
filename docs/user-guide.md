@@ -256,7 +256,7 @@ Fix:
 1. Start Docker Desktop.
 2. Confirm it uses Linux containers.
 3. Run `docker version` and `docker compose version`.
-4. Re-run `mvn clean verify`.
+4. Re-run `./mvnw clean verify`.
 
 ### Testcontainers Issues
 
@@ -295,7 +295,7 @@ OpenAPI generation requires the application to start successfully. If it fails:
 
 1. Start infrastructure with `docker compose up -d --wait`.
 2. Verify port `8080` is free.
-3. Run `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`.
+3. Run `./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`.
 4. Check `ecommerce-app/target/generated-docs/openapi.json`.
 
 ### Port Conflicts
