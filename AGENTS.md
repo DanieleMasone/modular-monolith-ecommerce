@@ -13,7 +13,7 @@ The project should demonstrate modular monolith architecture, clear domain bound
 - The default branch is `master`.
 - GitHub Actions workflows must trigger on `master`, not `main`.
 - Keep CI and GitHub Pages deployment in `.github/workflows/ci.yml` unless there is a strong reason to split them.
-- Main verification command: `mvn clean verify`.
+- Main verification command: `./mvnw clean verify`.
 - CI should run unit tests, integration tests, ArchUnit tests, OpenAPI generation, aggregate JavaDoc, JaCoCo coverage, HTML test reports, and GitHub Pages publication.
 - Published documentation URL: `https://danielemasone.github.io/modular-monolith-ecommerce/`.
 - Prefer current action major versions that run on Node.js 24; do not reintroduce deprecated Node.js 20 action versions.
@@ -92,7 +92,7 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 - Do not upgrade to a new major version if it requires architectural churn or weakens the portfolio signal.
 - Check official release notes or project documentation for breaking changes before version changes.
 - Update related dependencies consistently and keep versions centralized in the root `pom.xml` where practical.
-- After dependency or plugin changes, run `mvn clean verify`. If OpenAPI generation or Pages output is affected, also run the Docker Compose plus `generate-openapi` verification flow.
+- After dependency or plugin changes, run `./mvnw clean verify`. If OpenAPI generation or Pages output is affected, also run the Docker Compose plus `generate-openapi` verification flow.
 - Update README, AGENTS.md, docs, and CI only when commands, behavior, or support policy changes.
 - Do not add dependencies without a clear architectural or testing reason.
 
@@ -111,13 +111,13 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 
 ## Tests
 
-- Fast tests: `mvn test`.
-- Full suite: `mvn clean verify`.
+- Fast tests: `./mvnw test`.
+- Full suite: `./mvnw clean verify`.
 - Testcontainers integration tests require Docker. They are marked with `disabledWithoutDocker = true`, so local environments without Docker can still run the rest of the suite.
-- Treat `mvn clean verify` as a full local verification only when Docker Desktop is reachable and Testcontainers starts PostgreSQL and Redis.
+- Treat `./mvnw clean verify` as a full local verification only when Docker Desktop is reachable and Testcontainers starts PostgreSQL and Redis.
 - On Windows, assume Docker Desktop should use the WSL 2 based engine with Linux containers for this Java/PostgreSQL/Redis project.
-- Generate local HTML test reports with `mvn surefire-report:report-only surefire-report:failsafe-report-only` after tests have run.
-- For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
+- Generate local HTML test reports with `./mvnw surefire-report:report-only surefire-report:failsafe-report-only` after tests have run.
+- For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
 - Every implemented feature should have meaningful tests. Add or update API tests for externally exposed behavior, architecture rules for boundary-sensitive changes, and integration tests when persistence, Flyway, Redis, or events are involved.
 
 ## Agent Behavior
