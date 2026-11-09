@@ -32,11 +32,11 @@ jobs:
           docker compose version
 
       - name: Verify project
-        run: mvn -B clean verify
+        run: ./mvnw -B clean verify
 
       - name: Generate HTML test reports
         if: always()
-        run: mvn -B surefire-report:report-only surefire-report:failsafe-report-only
+        run: ./mvnw -B surefire-report:report-only surefire-report:failsafe-report-only
 
       - name: Upload test reports
         if: always()
@@ -103,14 +103,14 @@ jobs:
         run: docker compose up -d --wait
 
       - name: Generate OpenAPI specification
-        run: mvn -B -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+        run: ./mvnw -B -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
 
       - name: Stop Docker Compose
         if: always()
         run: docker compose down -v
 
       - name: Generate aggregate JavaDoc
-        run: mvn -B -DskipTests javadoc:aggregate
+        run: ./mvnw -B -DskipTests javadoc:aggregate
 
       - name: Assemble Pages artifact source
         env:

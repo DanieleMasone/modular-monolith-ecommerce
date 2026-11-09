@@ -143,6 +143,15 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 - If the Pages structure changes, update `scripts/build-pages.sh`, `.github/workflows/ci.yml`, README, and `docs/ci-and-pages.md` together when relevant.
 - Use the root Maven wrapper only. Do not add module-local Maven wrappers, module-local `.gitignore`, or module-local `.gitattributes` files.
 
+## Maven Wrapper
+
+- Use Maven 3.10.0 through the root Maven Wrapper.
+- Keep the wrapper in `only-script` mode.
+- Version `mvnw`, `mvnw.cmd` and `.mvn/wrapper/maven-wrapper.properties`.
+- Do not commit `maven-wrapper.jar`.
+- Use `./mvnw clean verify` as the standard verification command.
+- Use the Maven Wrapper consistently in local commands and CI.
+
 ## Avoid
 
 - Do not reintroduce module-local `application.yaml` files unless there is a strong reason.
