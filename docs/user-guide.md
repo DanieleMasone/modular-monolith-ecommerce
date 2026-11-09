@@ -27,7 +27,7 @@ This guide explains how to run, verify, and inspect the modular monolith locally
 ## Requirements
 
 - Java 21
-- Maven 3.9+
+- Maven Wrapper (Maven 3.10.0, included in the repository)
 - Docker with Docker Compose
 
 On Windows, use Docker Desktop with the WSL 2 based engine and Linux containers. Run all commands from the repository root.
@@ -36,14 +36,14 @@ Check the local toolchain:
 
 ```bash
 java -version
-mvn -version
+./mvnw -version
 docker version
 docker compose version
 ```
 
 ## Local Setup
 
-Clone the repository, then run commands from the repository root. The project has one Maven wrapper at the root because all modules are built together. The commands below use an installed Maven binary; `./mvnw` on Linux/macOS or `.\mvnw.cmd` on Windows provides the equivalent repository-pinned entry point.
+Clone the repository, then run commands from the repository root. The project provides a single Maven Wrapper at the root for the entire multi-module build. All commands below use `./mvnw` on Linux/macOS; on Windows, use `.\mvnw.cmd` instead. The wrapper uses Maven 3.10.0, so a separate Maven installation is not required.
 
 Useful module map:
 
@@ -78,7 +78,7 @@ Start infrastructure first, then run the application:
 
 ```bash
 docker compose up -d
-mvn -pl ecommerce-app -am spring-boot:run
+./mvnw -pl ecommerce-app -am spring-boot:run
 ```
 
 The application starts on:
@@ -97,7 +97,7 @@ Runtime API documentation:
 Run the full verification suite:
 
 ```bash
-mvn clean verify
+./mvnw clean verify
 ```
 
 With Docker available, this runs unit tests, architecture tests, and Testcontainers integration tests against PostgreSQL and Redis.
@@ -105,7 +105,7 @@ With Docker available, this runs unit tests, architecture tests, and Testcontain
 Run faster unit and architecture tests only:
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 If Docker is not available, Testcontainers integration tests are skipped by the existing `disabledWithoutDocker = true` configuration. That is useful for quick local checks, but it is not a full integration-test signal.
@@ -116,7 +116,7 @@ OpenAPI generation starts the application through Maven, reads the runtime API d
 
 ```bash
 docker compose up -d --wait
-mvn -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
 docker compose down -v
 ```
 
@@ -137,7 +137,7 @@ ecommerce-app/src/main/resources/openapi.yaml
 Generate aggregate JavaDoc:
 
 ```bash
-mvn -DskipTests javadoc:aggregate
+./mvnw -DskipTests javadoc:aggregate
 ```
 
 Generated output:
@@ -151,7 +151,7 @@ target/reports/apidocs/index.html
 Run verification:
 
 ```bash
-mvn clean verify
+./mvnw clean verify
 ```
 
 Generated aggregate JaCoCo output:
@@ -165,7 +165,7 @@ coverage-report/target/site/jacoco-aggregate/index.html
 After running tests, generate human-readable Surefire and Failsafe reports:
 
 ```bash
-mvn surefire-report:report-only surefire-report:failsafe-report-only
+./mvnw surefire-report:report-only surefire-report:failsafe-report-only
 ```
 
 Generated module report examples:

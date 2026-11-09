@@ -7,8 +7,10 @@ The repository uses one workflow, `.github/workflows/ci.yml`, for verification a
 `verify` runs on pull requests and pushes to `master`:
 
 ```bash
-mvn -B clean verify
+./mvnw -B clean verify
 ```
+
+The workflow uses the repository-pinned Maven Wrapper (`./mvnw`), configured with Maven 3.10.0 and the `only-script` distribution. This ensures consistent Maven tooling across local development and GitHub Actions without relying on the runner's preinstalled Maven version.
 
 This executes unit tests, ArchUnit rules, Failsafe integration tests, and aggregate JaCoCo coverage. GitHub-hosted runners provide Docker, so Testcontainers can start PostgreSQL and Redis. The job also creates human-readable Surefire and Failsafe HTML reports from the XML test outputs.
 

@@ -21,7 +21,7 @@ Unit tests use small hand-written fakes for application-service collaborators. T
 Run:
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 ## Architecture Tests
@@ -59,12 +59,12 @@ Rules include:
 Run the full suite:
 
 ```bash
-mvn clean verify
+./mvnw clean verify
 ```
 
-Docker must be available for Testcontainers. The test class is marked with `disabledWithoutDocker = true` so local environments without Docker can still run the rest of the suite. A local `mvn clean verify` run without Docker is useful, but it is not a full integration-test signal.
+Docker must be available for Testcontainers. The test class is marked with `disabledWithoutDocker = true` so local environments without Docker can still run the rest of the suite. A local `./mvnw clean verify` run without Docker is useful, but it is not a full integration-test signal.
 
-`mvn clean verify` also generates the aggregate JaCoCo report through the build-only `coverage-report` module:
+`./mvnw clean verify` also generates the aggregate JaCoCo report through the build-only `coverage-report` module:
 
 ```txt
 coverage-report/target/site/jacoco-aggregate/index.html
@@ -73,7 +73,7 @@ coverage-report/target/site/jacoco-aggregate/index.html
 Generate human-readable Surefire and Failsafe HTML reports after tests have run:
 
 ```bash
-mvn surefire-report:report-only surefire-report:failsafe-report-only
+./mvnw surefire-report:report-only surefire-report:failsafe-report-only
 ```
 
 CI publishes those generated reports to:
@@ -85,6 +85,6 @@ On Windows, run the full suite with Docker Desktop started, the WSL 2 based engi
 
 ## CI
 
-The main CI workflow runs `mvn clean verify` on pushes to `master` and pull requests. GitHub-hosted Linux runners provide Docker, so Testcontainers integration tests run there.
+The main CI workflow runs `./mvnw clean verify` on pushes to `master` and pull requests. GitHub-hosted Linux runners provide Docker, so Testcontainers integration tests run there.
 
 The unified CI workflow also builds documentation on `master`. It generates aggregate JavaDoc, starts PostgreSQL and Redis with Docker Compose, runs the `generate-openapi` Maven profile, and publishes Markdown docs, JavaDoc, a static Swagger UI page, and OpenAPI JSON to GitHub Pages.
