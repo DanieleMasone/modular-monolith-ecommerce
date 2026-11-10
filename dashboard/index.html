@@ -184,9 +184,9 @@
     <h2 id="run-title">How to Run Locally</h2>
     <p>Start PostgreSQL and Redis, verify the project, then run the executable module.</p>
 
-    <pre><code>docker compose up -d
-mvn clean verify
-mvn -pl ecommerce-app -am spring-boot:run</code></pre>
+    <pre><code>docker compose up -d --wait
+./mvnw -pl ecommerce-app -am install
+./mvnw -pl ecommerce-app spring-boot:run "-Dspring-boot.run.arguments=--spring.docker.compose.enabled=false"</code></pre>
     <a href="/modular-monolith-ecommerce/docs/user-guide.html">Read the complete setup and troubleshooting guide</a>
   </section>
 

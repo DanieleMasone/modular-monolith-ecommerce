@@ -74,14 +74,15 @@ The Docker Compose credentials are for local development only.
 
 ## Running the Application
 
-Start infrastructure first, then run the application:
+Start infrastructure, build and install the application and its reactor dependencies, then run only the executable module:
 
 ```bash
-docker compose up -d
-./mvnw -pl ecommerce-app -am spring-boot:run
+docker compose up -d --wait
+./mvnw -pl ecommerce-app -am install
+./mvnw -pl ecommerce-app spring-boot:run "-Dspring-boot.run.arguments=--spring.docker.compose.enabled=false"
 ```
 
-The application starts on:
+The run argument disables Spring Boot's automatic Compose discovery because the root Compose stack is already running. The application starts on:
 
 ```txt
 http://localhost:8080

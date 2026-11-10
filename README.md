@@ -57,12 +57,12 @@ Java 21, Spring Boot 4.x, Spring Web MVC, Spring Data JPA, Hibernate, PostgreSQL
 
 ## Quick Start
 
-Requirements: Java 21, Maven 3.10.0, and Docker with Docker Compose.
+Requirements: Java 21 and Docker with Docker Compose. The Maven Wrapper supplies Maven.
 
 ```bash
-docker compose up -d
-./mvnw clean verify
-./mvnw -pl ecommerce-app -am spring-boot:run
+docker compose up -d --wait
+./mvnw -pl ecommerce-app -am install
+./mvnw -pl ecommerce-app spring-boot:run "-Dspring-boot.run.arguments=--spring.docker.compose.enabled=false"
 ```
 
 The application starts on `http://localhost:8080`.

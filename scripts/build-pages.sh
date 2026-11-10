@@ -185,8 +185,8 @@ improve_generated_report_responsiveness() {
 
   cat >> "$PAGES_DIR/coverage/jacoco-resources/report.css" <<'EOF'
 
-/* Keep generated JaCoCo tables usable without widening the mobile page. */
-@media (max-width: 720px) {
+/* Keep generated JaCoCo tables usable on narrow and tablet viewports. */
+@media (max-width: 1000px) {
   body {
     max-width: calc(100vw - 16px);
   }
