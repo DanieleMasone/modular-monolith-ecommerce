@@ -85,6 +85,8 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 
 ## Dependency and Version Policy
 
+- Perform dependency maintenance manually when requested. Do not configure dependency update bots, scheduled version checks, or automatic update pull requests.
+
 - Prefer the latest stable compatible version, not the newest version at any cost.
 - Keep Java at 21 unless the user explicitly asks for a platform change.
 - Keep Spring Boot on a stable compatible Spring Boot 4.x release unless the user explicitly asks for a major upgrade.
@@ -117,7 +119,7 @@ Pages assembly is centralized in `scripts/build-pages.sh`. Keep that script dete
 - Treat `./mvnw clean verify` as a full local verification only when Docker Desktop is reachable and Testcontainers starts PostgreSQL and Redis.
 - On Windows, assume Docker Desktop should use the WSL 2 based engine with Linux containers for this Java/PostgreSQL/Redis project.
 - Generate local HTML test reports with `./mvnw surefire-report:report-only surefire-report:failsafe-report-only` after tests have run.
-- For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`, then shut infrastructure down with `docker compose down -v`.
+- For the CI documentation path, verify Docker Compose plus OpenAPI generation with `docker compose up -d --wait` followed by `./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests -DskipITs verify`, then shut infrastructure down with `docker compose down -v`.
 - Every implemented feature should have meaningful tests. Add or update API tests for externally exposed behavior, architecture rules for boundary-sensitive changes, and integration tests when persistence, Flyway, Redis, or events are involved.
 
 ## Agent Behavior

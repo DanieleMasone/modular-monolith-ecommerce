@@ -116,7 +116,7 @@ OpenAPI generation starts the application through Maven, reads the runtime API d
 
 ```bash
 docker compose up -d --wait
-./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify
+./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests -DskipITs verify
 docker compose down -v
 ```
 
@@ -295,7 +295,7 @@ OpenAPI generation requires the application to start successfully. If it fails:
 
 1. Start infrastructure with `docker compose up -d --wait`.
 2. Verify port `8080` is free.
-3. Run `./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests verify`.
+3. Run `./mvnw -pl ecommerce-app -am -Pgenerate-openapi -DskipTests -DskipITs verify`.
 4. Check `ecommerce-app/target/generated-docs/openapi.json`.
 
 ### Port Conflicts

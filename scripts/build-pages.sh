@@ -45,11 +45,11 @@ write_openapi_ui() {
   <title>Modular Monolith E-commerce API</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Generated OpenAPI reference for the Modular Monolith E-commerce project.">
-  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.32.13/swagger-ui.css">
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.34.1/swagger-ui.css">
 </head>
 <body>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5.32.13/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.34.1/swagger-ui-bundle.js"></script>
   <script>
     window.onload = () => {
       window.ui = SwaggerUIBundle({
